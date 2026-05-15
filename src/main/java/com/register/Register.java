@@ -32,17 +32,17 @@ public class Register extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
+        emailField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
+        signUpButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         logginButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        usernameField = new javax.swing.JTextField();
+        resetButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("BarberShop Register");
@@ -60,13 +60,14 @@ public class Register extends javax.swing.JFrame {
             .addGap(0, 100, Short.MAX_VALUE)
         );
 
-        jTextField2.addActionListener(this::jTextField2ActionPerformed);
+        emailField.addActionListener(this::emailFieldActionPerformed);
 
         jLabel1.setText("Email Address:");
 
         jLabel2.setText("Password:");
 
-        jButton1.setText("Sign-up");
+        signUpButton.setText("Sign-up");
+        signUpButton.addActionListener(this::signUpButtonActionPerformed);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("REGISTER PAGE");
@@ -81,9 +82,10 @@ public class Register extends javax.swing.JFrame {
 
         jLabel5.setText("Username:");
 
-        jTextField3.addActionListener(this::jTextField3ActionPerformed);
+        usernameField.addActionListener(this::usernameFieldActionPerformed);
 
-        jButton3.setText("Reset");
+        resetButton.setText("Reset");
+        resetButton.addActionListener(this::resetButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -102,12 +104,12 @@ public class Register extends javax.swing.JFrame {
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                            .addComponent(jPasswordField1)
+                            .addComponent(emailField, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                            .addComponent(passwordField)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
                                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)))
+                            .addComponent(usernameField, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addComponent(jLabel4)))
@@ -115,8 +117,8 @@ public class Register extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(signUpButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(resetButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(253, 253, 253))
         );
         jPanel2Layout.setVerticalGroup(
@@ -126,19 +128,19 @@ public class Register extends javax.swing.JFrame {
                 .addGap(31, 31, 31)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-                    .addComponent(jPasswordField1))
+                    .addComponent(passwordField))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(signUpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(resetButton, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
@@ -164,9 +166,9 @@ public class Register extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void emailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_emailFieldActionPerformed
 
     private void logginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logginButtonActionPerformed
         // TODO add your handling code here:
@@ -178,9 +180,68 @@ public class Register extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_logginButtonActionPerformed
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void usernameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_usernameFieldActionPerformed
+
+    private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
+        
+        //username
+        String username = usernameField.getText();
+        //email
+        String email = emailField.getText();
+        //password
+        String password = new String(passwordField.getPassword());
+        
+        
+        if(username.isEmpty() || email.isEmpty() || password.isEmpty()){
+            javax.swing.JOptionPane.showMessageDialog(this, "Please Fill All the Fields");
+            
+        }
+        //sql statement
+        String sql = "INSERT INTO users (username, email, password, role) VALUES (?,?,?,'CUSTOMER')";
+        
+        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        // Αντιστοίχιση τιμών στα ερωτηματικά (?)
+        pstmt.setString(1, username);
+        pstmt.setString(2, email);
+        pstmt.setString(3, password);
+
+        // Εκτέλεση της ενημέρωσης στη βάση
+        int rowsInserted = pstmt.executeUpdate();
+        
+        if (rowsInserted > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Registered Succesfully");
+            
+            // Κλείσιμο του τρέχοντος παραθύρου Register
+            this.dispose();
+            
+            // Άνοιγμα του Customer Landing Page από το package com.landingpage
+            new com.landingpage.customerLandingPage().setVisible(true);
+        }
+        
+    } catch (java.sql.SQLException e) {
+        // Διαχείριση σφαλμάτων βάσης
+        if (e.getErrorCode() == 1062) { 
+            javax.swing.JOptionPane.showMessageDialog(this, "Username or email already being used.");
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Failled to register " + e.getMessage());
+        }
+    }
+        
+    }//GEN-LAST:event_signUpButtonActionPerformed
+
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+        // TODO add your handling code here:
+        //Clear text fields
+        
+        usernameField.setText("");
+        emailField.setText("");
+        passwordField.setText("");
+        
+    }//GEN-LAST:event_resetButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -208,8 +269,7 @@ public class Register extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JTextField emailField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -217,9 +277,10 @@ public class Register extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
     private javax.swing.JButton logginButton;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JButton resetButton;
+    private javax.swing.JButton signUpButton;
+    private javax.swing.JTextField usernameField;
     // End of variables declaration//GEN-END:variables
 }
