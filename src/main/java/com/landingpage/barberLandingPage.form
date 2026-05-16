@@ -53,7 +53,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                  <Component id="logOutButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -62,14 +62,14 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace pref="71" max="32767" attributes="0"/>
-                  <Component id="jButton4" min="-2" max="-2" attributes="0"/>
+                  <Component id="logOutButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton4">
+        <Component class="javax.swing.JButton" name="logOutButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="LogOut"/>
           </Properties>
@@ -143,7 +143,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JTextPane" name="jTextPane1">
+            <Component class="javax.swing.JTextPane" name="usernameShow">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Arial" size="12" style="0"/>
@@ -181,9 +181,9 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="14" pref="14" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jButton5" min="-2" pref="167" max="-2" attributes="0"/>
-                      <Component id="jButton2" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
-                      <Component id="jButton3" min="-2" pref="167" max="-2" attributes="0"/>
+                      <Component id="myAvailabilityButton" min="-2" pref="167" max="-2" attributes="0"/>
+                      <Component id="myAppoinmentsButton" alignment="0" min="-2" pref="167" max="-2" attributes="0"/>
+                      <Component id="myServicesButton" min="-2" pref="167" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -193,28 +193,28 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                  <Component id="jButton2" min="-2" pref="49" max="-2" attributes="0"/>
+                  <Component id="myAppoinmentsButton" min="-2" pref="49" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jButton5" min="-2" pref="49" max="-2" attributes="0"/>
+                  <Component id="myAvailabilityButton" min="-2" pref="49" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jButton3" min="-2" pref="49" max="-2" attributes="0"/>
+                  <Component id="myServicesButton" min="-2" pref="49" max="-2" attributes="0"/>
                   <EmptySpace pref="87" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="myAppoinmentsButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="My Appoinments"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton3">
+        <Component class="javax.swing.JButton" name="myServicesButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="My Services"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton5">
+        <Component class="javax.swing.JButton" name="myAvailabilityButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="My Availability"/>
           </Properties>
