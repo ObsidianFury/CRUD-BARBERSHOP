@@ -18,10 +18,11 @@ public class adminLandingPage extends javax.swing.JFrame {
     public adminLandingPage() {
         initComponents();
     }
-    
+    String username;
     // Μέθοδος που δέχεται το username από το Login και το βάζει στο TextPane
     public void setUsername(String username) {
         usernameShow.setText(username);
+        this.username = username;
     }
 
     /**
@@ -51,6 +52,7 @@ public class adminLandingPage extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         logoutButton.setText("LogOut");
+        logoutButton.addActionListener(this::logoutButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -117,6 +119,7 @@ public class adminLandingPage extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         appoinmentsButton.setText("Appoinments");
+        appoinmentsButton.addActionListener(this::appoinmentsButtonActionPerformed);
 
         timeSlotsButton.setText("Manage Time-slots");
 
@@ -175,12 +178,35 @@ public class adminLandingPage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void accountDeletionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountDeletionButtonActionPerformed
-        // TODO add your handling code here:
+        //Opens request account deleteions page
+        com.adminUtils.adminAccountsDeletions accDel = new com.adminUtils.adminAccountsDeletions();
+        accDel.setVisible(true);
+        accDel.setUsername(username);
+        this.dispose();
     }//GEN-LAST:event_accountDeletionButtonActionPerformed
 
     private void accountCreationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountCreationButtonActionPerformed
-        // TODO add your handling code here:
+        // Opens the account creation page
+        com.adminUtils.adminAccountsCreation accCreate = new com.adminUtils.adminAccountsCreation();
+        accCreate.setVisible(true);
+        accCreate.setUsername(username);
+        this.dispose();
     }//GEN-LAST:event_accountCreationButtonActionPerformed
+
+    private void appoinmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appoinmentsButtonActionPerformed
+        //Opens global appoinments page
+        com.adminUtils.adminGlobalAppoinments glAppoinments = new com.adminUtils.adminGlobalAppoinments();
+        glAppoinments.setVisible(true);
+        glAppoinments.setUsername(username);
+        this.dispose();
+    }//GEN-LAST:event_appoinmentsButtonActionPerformed
+
+    private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
+        // Logout button
+        this.dispose();
+        com.login.Login log = new com.login.Login();
+        log.setVisible(true);
+    }//GEN-LAST:event_logoutButtonActionPerformed
 
     /**
      * @param args the command line arguments

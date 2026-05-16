@@ -20,6 +20,9 @@ public class adminAccountsCreation extends javax.swing.JFrame {
     public adminAccountsCreation() {
         initComponents();
     }
+    public void setUsername(String username) {
+        usernameShow.setText(username);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -36,7 +39,7 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        usernameShow = new javax.swing.JTextPane();
         jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -87,9 +90,9 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         jLabel1.setText("Welcome");
         jLabel1.setToolTipText("");
 
-        jTextPane1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        jTextPane1.setForeground(java.awt.Color.white);
-        jScrollPane1.setViewportView(jTextPane1);
+        usernameShow.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        usernameShow.setForeground(java.awt.Color.white);
+        jScrollPane1.setViewportView(usernameShow);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel2.setForeground(java.awt.Color.white);
@@ -314,6 +317,6 @@ public class adminAccountsCreation extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextPane usernameShow;
     // End of variables declaration//GEN-END:variables
 }

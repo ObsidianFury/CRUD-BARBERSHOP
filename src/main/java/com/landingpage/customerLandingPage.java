@@ -50,6 +50,7 @@ public class customerLandingPage extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         logOutButton.setText("LogOut");
+        logOutButton.addActionListener(this::logOutButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -115,8 +116,10 @@ public class customerLandingPage extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         createAppoinmentButton.setText("Create Appoinment");
+        createAppoinmentButton.addActionListener(this::createAppoinmentButtonActionPerformed);
 
         myAppoinmentsButton.setText("My Appoinments");
+        myAppoinmentsButton.addActionListener(this::myAppoinmentsButtonActionPerformed);
 
         requestAcountDeletionButton.setText("Request Account Deletion");
 
@@ -166,6 +169,28 @@ public class customerLandingPage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void createAppoinmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAppoinmentButtonActionPerformed
+        //Opens the appoinment creation page for the customer
+        com.customerUtils.customerCreateAppoinment creatAppoinment = new com.customerUtils.customerCreateAppoinment();
+        creatAppoinment.setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_createAppoinmentButtonActionPerformed
+
+    private void myAppoinmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAppoinmentsButtonActionPerformed
+        // Opens the appoinment history page for the customer
+        com.customerUtils.customerViewAppoinments viewAppoinments = new com.customerUtils.customerViewAppoinments();
+        viewAppoinments.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_myAppoinmentsButtonActionPerformed
+
+    private void logOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutButtonActionPerformed
+        //Logsout the current user
+        this.dispose();
+        com.login.Login log = new com.login.Login();
+        log.setVisible(true);
+    }//GEN-LAST:event_logOutButtonActionPerformed
 
     /**
      * @param args the command line arguments

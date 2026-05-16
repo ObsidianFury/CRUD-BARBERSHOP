@@ -18,11 +18,14 @@ public class barberLandingPage extends javax.swing.JFrame {
     public barberLandingPage() {
         initComponents();
     }
-    
+    String username;
     // Μέθοδος που δέχεται το username από το Login και το βάζει στο TextPane
     public void setUsername(String username) {
         usernameShow.setText(username);
+        this.username = username;
+        
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -50,6 +53,7 @@ public class barberLandingPage extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         logOutButton.setText("LogOut");
+        logOutButton.addActionListener(this::logOutButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -116,10 +120,13 @@ public class barberLandingPage extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
         myAppoinmentsButton.setText("My Appoinments");
+        myAppoinmentsButton.addActionListener(this::myAppoinmentsButtonActionPerformed);
 
         myServicesButton.setText("My Services");
+        myServicesButton.addActionListener(this::myServicesButtonActionPerformed);
 
         myAvailabilityButton.setText("My Availability");
+        myAvailabilityButton.addActionListener(this::myAvailabilityButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -165,6 +172,37 @@ public class barberLandingPage extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void myAppoinmentsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAppoinmentsButtonActionPerformed
+        //Opens current's barber appoinments
+        com.barberUtils.barberAppoinmetnsView appoinmentsView = new com.barberUtils.barberAppoinmetnsView();
+        appoinmentsView.setVisible(true);
+        appoinmentsView.setUsername(username);
+        this.dispose();
+    }//GEN-LAST:event_myAppoinmentsButtonActionPerformed
+
+    private void myAvailabilityButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myAvailabilityButtonActionPerformed
+        //Opens current's barber availability page
+        com.barberUtils.barberAvailability availability = new com.barberUtils.barberAvailability();
+        availability.setVisible(true);
+        availability.setUsername(username);
+        this.dispose();
+    }//GEN-LAST:event_myAvailabilityButtonActionPerformed
+
+    private void myServicesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myServicesButtonActionPerformed
+        //Opens current's barber service page
+        com.barberUtils.barberService service = new com.barberUtils.barberService();
+        service.setVisible(true);
+        service.setUsername(username);
+        this.dispose();
+    }//GEN-LAST:event_myServicesButtonActionPerformed
+
+    private void logOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutButtonActionPerformed
+        //Logsout current barber
+        this.dispose();
+        com.login.Login login = new com.login.Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_logOutButtonActionPerformed
 
     /**
      * @param args the command line arguments

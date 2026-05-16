@@ -73,6 +73,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="LogOut"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logOutButtonActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -208,11 +211,17 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Create Appoinment"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="createAppoinmentButtonActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="myAppoinmentsButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="My Appoinments"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="myAppoinmentsButtonActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="requestAcountDeletionButton">
           <Properties>
