@@ -219,7 +219,9 @@ public class Register extends javax.swing.JFrame {
             this.dispose();
             
             // Άνοιγμα του Customer Landing Page από το package com.landingpage
-            new com.landingpage.customerLandingPage().setVisible(true);
+            com.landingpage.customerLandingPage customerPage = new com.landingpage.customerLandingPage();
+            customerPage.setUsername(username);
+            customerPage.setVisible(true);
         }
         
     } catch (java.sql.SQLException e) {

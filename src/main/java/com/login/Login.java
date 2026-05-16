@@ -185,18 +185,25 @@ public class Login extends javax.swing.JFrame {
         try (java.sql.ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
                 String role = rs.getString("role");
+                String username = rs.getString("username");
                 javax.swing.JOptionPane.showMessageDialog(this, "Succesfully connected as " + role);
 
                 // Ανακατεύθυνση βάσει ρόλου
                 switch (role) {
                     case "ADMIN":
-                        new com.landingpage.adminLandingPage().setVisible(true);
+                        com.landingpage.adminLandingPage adminPage = new com.landingpage.adminLandingPage();
+                        adminPage.setUsername(username); 
+                        adminPage.setVisible(true);
                         break;
                     case "BARBER":
-                        new com.landingpage.barberLandingPage().setVisible(true);
+                        com.landingpage.barberLandingPage barberPage = new com.landingpage.barberLandingPage();
+                        barberPage.setUsername(username);
+                        barberPage.setVisible(true);
                         break;
                     case "CUSTOMER":
-                        new com.landingpage.customerLandingPage().setVisible(true);
+                        com.landingpage.customerLandingPage customerPage = new com.landingpage.customerLandingPage();
+                        customerPage.setUsername(username);
+                        customerPage.setVisible(true);
                         break;
                 }
                 this.dispose();

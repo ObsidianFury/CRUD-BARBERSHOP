@@ -18,6 +18,11 @@ public class barberLandingPage extends javax.swing.JFrame {
     public barberLandingPage() {
         initComponents();
     }
+    
+    // Μέθοδος που δέχεται το username από το Login και το βάζει στο TextPane
+    public void setUsername(String username) {
+        usernameShow.setText(username);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
