@@ -174,7 +174,7 @@ public class Login extends javax.swing.JFrame {
         String password = new String(passwordField.getPassword());
         
         //sql statement
-        String sql = "SELECT role FROM users WHERE email = ? AND password = ? ";
+        String sql = "SELECT username, role FROM users WHERE email = ? AND password = ? ";
         
         try (java.sql.Connection conn = com.database.DBConnection.getConnection();
          java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
