@@ -13,16 +13,99 @@ import com.landingpage.*;
 public class adminAccountsDeletions extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(adminAccountsDeletions.class.getName());
-
+    private int selectedUserId = -1; 
     /**
      * Creates new form customerLandingPage
      */
     public adminAccountsDeletions() {
         initComponents();
+        setupListeners();
     }
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadUsers(); // Φορτώνει τους χρήστες με το που ανοίγει η οθόνη
+    }
+    
+    private void loadUsers(){
+    
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        model.setColumnIdentifiers(new String[]{"User ID", "Username", "Email", "Role"});
+        model.setRowCount(0);
+
+        String sql = "SELECT user_id, username, email, role FROM Users WHERE role IN ('CUSTOMER', 'BARBER') ORDER BY role DESC, username ASC";
+
+        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = pstmt.executeQuery()) {
+             
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("user_id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("role")
+                });
+            }
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error loading users: " + e.getMessage());
+        }
+    }
+    
+    private void setupListeners(){
+    
+        // Κουμπί SELECT
+        selectButton.addActionListener(e -> {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Please choose a user from the table.");
+                return;
+            }
+            
+            selectedUserId = (int) jTable1.getValueAt(selectedRow, 0); // Παίρνουμε το κρυφό ID
+            usernameField.setText(jTable1.getValueAt(selectedRow, 1).toString());
+            emailField.setText(jTable1.getValueAt(selectedRow, 2).toString());
+            
+        });
+        
+        // Κουμπί DELETE
+        deleteButton.addActionListener(e -> {
+            if (selectedUserId == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Please select user to delete");
+                return;
+            }
+            
+            // Pop-up επιβεβαίωσης για ασφάλεια (ο Admin πρέπει να είναι σίγουρος)
+            int confirm = javax.swing.JOptionPane.showConfirmDialog(this, 
+                    "Are you sure you want to delete?", 
+                    "Confirm Deletion", 
+                    javax.swing.JOptionPane.YES_NO_OPTION, 
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            
+            if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+                String sql = "DELETE FROM Users WHERE user_id = ?";
+                
+                try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+                     java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                     
+                    pstmt.setInt(1, selectedUserId);
+                    int rowsDeleted = pstmt.executeUpdate();
+                    
+                    if (rowsDeleted > 0) {
+                        javax.swing.JOptionPane.showMessageDialog(this, "User deleted");
+                        
+                        // Καθαρισμός πεδίων και ανανέωση πίνακα
+                        selectedUserId = -1;
+                        usernameField.setText("");
+                        emailField.setText("");
+                  
+                        loadUsers();
+                    }
+                } catch (java.sql.SQLException ex) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Error deleting: " + ex.getMessage());
+                }
+            }
+        });
     }
 
     /**
@@ -35,7 +118,7 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
+        backButoon = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -44,21 +127,22 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        usernameField = new javax.swing.JTextField();
+        clearButton = new javax.swing.JButton();
+        selectButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel4 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
-        jTextField3 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        emailField = new javax.swing.JTextField();
+        deleteButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
-        jButton6.setText("Back");
+        backButoon.setText("Back");
+        backButoon.addActionListener(this::backButoonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -66,14 +150,14 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6)
+                .addComponent(backButoon)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(71, Short.MAX_VALUE)
-                .addComponent(jButton6)
+                .addComponent(backButoon)
                 .addContainerGap())
         );
 
@@ -86,7 +170,6 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         jLabel1.setToolTipText("");
 
         usernameShow.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        usernameShow.setForeground(java.awt.Color.white);
         jScrollPane1.setViewportView(usernameShow);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -138,17 +221,18 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable1);
 
-        jButton1.setText("Clear");
+        clearButton.setText("Clear");
+        clearButton.addActionListener(this::clearButtonActionPerformed);
 
-        jButton2.setText("Select");
+        selectButton.setText("Select");
 
         jLabel3.setText("Username:");
 
         jLabel4.setText("Email:");
 
-        jTextField3.addActionListener(this::jTextField3ActionPerformed);
+        emailField.addActionListener(this::emailFieldActionPerformed);
 
-        jButton3.setText("Delete");
+        deleteButton.setText("Delete");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -158,21 +242,21 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 92, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -186,13 +270,13 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -200,9 +284,9 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(selectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap())
         );
 
@@ -227,9 +311,21 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+    private void emailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailFieldActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField3ActionPerformed
+    }//GEN-LAST:event_emailFieldActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        usernameField.setText("");
+        emailField.setText("");
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void backButoonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButoonActionPerformed
+        com.landingpage.adminLandingPage landingPage = new com.landingpage.adminLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButoonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -257,10 +353,10 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton backButoon;
+    private javax.swing.JButton clearButton;
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JTextField emailField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -273,8 +369,8 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JButton selectButton;
+    private javax.swing.JTextField usernameField;
     private javax.swing.JTextPane usernameShow;
     // End of variables declaration//GEN-END:variables
 }
