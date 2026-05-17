@@ -20,8 +20,10 @@ public class customerLandingPage extends javax.swing.JFrame {
     }
     
     // Μέθοδος που δέχεται το username από το Login και το βάζει στο TextPane
+    String username;
     public void setUsername(String username) {
         usernameShow.setText(username);
+        username = this.username;
     }
 
     /**
@@ -172,8 +174,9 @@ public class customerLandingPage extends javax.swing.JFrame {
 
     private void createAppoinmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAppoinmentButtonActionPerformed
         //Opens the appoinment creation page for the customer
-        com.customerUtils.customerCreateAppoinment creatAppoinment = new com.customerUtils.customerCreateAppoinment();
-        creatAppoinment.setVisible(true);
+        com.customerUtils.customerCreateAppoinment createAppoinment = new com.customerUtils.customerCreateAppoinment();
+        createAppoinment.setVisible(true);
+        createAppoinment.setUsername(username);
         this.dispose();
         
     }//GEN-LAST:event_createAppoinmentButtonActionPerformed
