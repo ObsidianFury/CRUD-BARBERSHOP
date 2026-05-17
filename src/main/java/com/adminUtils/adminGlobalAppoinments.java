@@ -13,16 +13,208 @@ import com.landingpage.*;
 public class adminGlobalAppoinments extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(adminGlobalAppoinments.class.getName());
+    
+    private int selectedAppointmentId = -1;
+    
+    
 
     /**
      * Creates new form customerLandingPage
      */
     public adminGlobalAppoinments() {
         initComponents();
+        setupListeners();
     }
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadAllAppointments();
+        loadComboBoxData();
+    }
+    
+    //Μέθοδος που φορτώνει ΟΛΑ τα ραντεβού στον πίνακα
+    private void loadAllAppointments(){
+    
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        model.setColumnIdentifiers(new String[]{"ID","Customer","Barber","Service","Date","Time","Status"});
+        model.setRowCount(0);
+        
+        String sql = "SELECT a.appointment_id, c.username AS customer_name, b.username AS barber_name, " +
+                     "s.service_name, a.appointment_date, a.appointment_time, a.status " +
+                     "FROM Appointments a " +
+                     "JOIN Users c ON a.customer_id = c.user_id " +
+                     "JOIN Users b ON a.barber_id = b.user_id " +
+                     "JOIN Services s ON a.service_id = s.service_id " +
+                     "ORDER BY a.appointment_date DESC";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            java.sql.ResultSet rs = pstmt.executeQuery()){
+        
+            while(rs.next()){
+                model.addRow(new Object[]{
+                rs.getInt("appointment_id"),
+                rs.getString("customer_name"),
+                rs.getString("barber_name"),
+                rs.getString("service_name"),
+                rs.getString("appointment_date"),
+                rs.getString("appointment_time"),
+                rs.getString("status")
+                });
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage());
+        }
+    }
+    
+    
+    //Μέθοδος που γεμίζει αυτόματα τα ComboBoxes από τη βάση δεδομένων
+    private void loadComboBoxData(){
+    
+        barberComboBox.removeAllItems();
+        serviceComboBox.removeAllItems();
+        
+        // Φόρτωση Κουρέων
+        String barberSql = "SELECT username FROM Users WHERE role = 'BARBER'";
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(barberSql);
+            java.sql.ResultSet rs = pstmt.executeQuery()){
+        
+            while(rs.next()){
+                barberComboBox.addItem(rs.getString("username"));
+            }
+        }catch(java.sql.SQLException e){
+        
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading barber combobox: " + e.getMessage());
+        }
+        
+        // Φόρτωση Υπηρεσιών
+        String serviceSql = "SELECT DISTINCT service_name FROM Services";
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(serviceSql);
+            java.sql.ResultSet rs = pstmt.executeQuery()){
+        
+            while(rs.next()){
+                serviceComboBox.addItem(rs.getString("service_name"));
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading service combobox: " + e.getMessage());
+        }
+    
+    }
+    
+    private void setupListeners(){
+    
+        // Όταν αλλάζει ο Barber στο ComboBox, ενημερώνεται το αντίστοιχο Field
+        barberComboBox.addActionListener(e -> {
+            if (barberComboBox.getSelectedItem() != null) {
+                barberField.setText(barberComboBox.getSelectedItem().toString());
+            }
+        });
+        
+        // Όταν αλλάζει το Service στο ComboBox, ενημερώνεται το αντίστοιχο Field
+        serviceComboBox.addActionListener(e -> {
+            if (serviceComboBox.getSelectedItem() != null) {
+                serviceField.setText(serviceComboBox.getSelectedItem().toString());
+            }
+        });
+        
+        // Όταν αλλάζει η ημερομηνία στο Date Chooser, ενημερώνεται το Time-Date Field (κρατώντας την ώρα)
+        timeDateChooser.addPropertyChangeListener("date", evt -> {
+            if (timeDateChooser.getDate() != null) {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                String formattedDate = sdf.format(timeDateChooser.getDate());
+                
+                String currentText = timeDateField.getText();
+                if (currentText.contains(" ")) {
+                    String[] parts = currentText.split(" ");
+                    timeDateField.setText(formattedDate + " " + parts[1]);
+                } else {
+                    timeDateField.setText(formattedDate + " 12:00:00"); // Default ώρα αν δεν υπήρχε
+                }
+            }
+        });
+        
+        // Κουμπί SELECT: Παίρνει τα στοιχεία της επιλεγμένης γραμμής και τα βάζει στα Fields
+        selectButton.addActionListener(e -> {
+            int selectedRow = jTable1.getSelectedRow();
+            if (selectedRow == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ επιλέξτε ένα ραντεβού από τον πίνακα.");
+                return;
+            }
+            
+            selectedAppointmentId = (int) jTable1.getValueAt(selectedRow, 0);
+            usernameField.setText(jTable1.getValueAt(selectedRow, 1).toString());
+            barberField.setText(jTable1.getValueAt(selectedRow, 2).toString());
+            serviceField.setText(jTable1.getValueAt(selectedRow, 3).toString());
+            
+            String date = jTable1.getValueAt(selectedRow, 4).toString();
+            String time = jTable1.getValueAt(selectedRow, 5).toString();
+            timeDateField.setText(date + " " + time);
+            
+            // Ενημέρωση και του γραφικού ημερολογίου (Date Chooser)
+            try {
+                java.util.Date parsedDate = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(date);
+                timeDateChooser.setDate(parsedDate);
+            } catch (Exception ex) {
+                System.out.println("Σφάλμα μετατροπής ημερομηνίας: " + ex.getMessage());
+            }
+        });
+        
+        // Κουμπί MODIFY: Αποθηκεύει τις αλλαγές στη βάση και ανανεώνει τον πίνακα
+        modifyButton.addActionListener(e -> {
+            if (selectedAppointmentId == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ επιλέξτε πρώτα ένα ραντεβού πατώντας 'Select'.");
+                return;
+            }
+            
+            String barberName = barberField.getText().trim();
+            String serviceName = serviceField.getText().trim();
+            String dateTimeStr = timeDateField.getText().trim();
+            
+            if (barberName.isEmpty() || serviceName.isEmpty() || dateTimeStr.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Τα πεδία δεν πρέπει να είναι κενά.");
+                return;
+            }
+            
+            // Διαχωρισμός ημερομηνίας και ώρας από το TextField
+            String datePart = dateTimeStr;
+            String timePart = "12:00:00"; 
+            if (dateTimeStr.contains(" ")) {
+                String[] parts = dateTimeStr.split(" ");
+                datePart = parts[0];
+                timePart = parts[1];
+            }
+            
+            // SQL Query: Ενημερώνει το ραντεβού βρίσκοντας δυναμικά τα IDs του Barber και του Service
+            String sql = "UPDATE Appointments SET " +
+                         "appointment_date = ?, " +
+                         "appointment_time = ?, " +
+                         "barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER'), " +
+                         "service_id = (SELECT service_id FROM Services WHERE service_name = ? AND barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER') LIMIT 1) " +
+                         "WHERE appointment_id = ?";
+                         
+            try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                 
+                pstmt.setString(1, datePart);
+                pstmt.setString(2, timePart);
+                pstmt.setString(3, barberName);
+                pstmt.setString(4, serviceName);
+                pstmt.setString(5, barberName);
+                pstmt.setInt(6, selectedAppointmentId);
+                
+                int rowsUpdated = pstmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Το ραντεβού τροποποιήθηκε επιτυχώς!");
+                    loadAllAppointments(); // Ανανέωση του πίνακα ζωντανά
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this, "Δεν βρέθηκε έγκυρος συνδυασμός Barber και Service στη βάση.");
+                }
+            } catch (java.sql.SQLException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα κατά την τροποποίηση: " + ex.getMessage());
+            }
+        });
     }
 
     /**
@@ -68,6 +260,7 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -147,6 +340,7 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTable1);
 
         clearButton.setText("Clear");
+        clearButton.addActionListener(this::clearButtonActionPerformed);
 
         selectButton.setText("Select");
 
@@ -283,6 +477,20 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
     private void barberFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_barberFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_barberFieldActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        usernameField.setText("");
+        timeDateField.setText("");
+        barberField.setText("");
+        serviceField.setText("");
+    }//GEN-LAST:event_clearButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        com.landingpage.adminLandingPage landingPage = new com.landingpage.adminLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
