@@ -51,6 +51,7 @@ public class barberAvailability extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -119,6 +120,7 @@ public class barberAvailability extends javax.swing.JFrame {
         availabilityCheckBox.setText("I am Available");
 
         confirmButton.setText("Confirm");
+        confirmButton.addActionListener(this::confirmButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -161,6 +163,42 @@ public class barberAvailability extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
+        
+        // Ελέγχουμε αν το checkbox είναι τσεκαρισμένο
+        if(!availabilityCheckBox.isSelected()){
+            javax.swing.JOptionPane.showMessageDialog(this, "Please check the availability box");
+        }
+        
+        String username = usernameShow.getText();
+        
+        // SQL: Βρίσκει το barber_id και βάζει διαθεσιμότητα για ΣΗΜΕΡΑ 09:00-17:00
+        String sql = "INSERT INTO Availability (barber_id, availability_date, start_time, end_time) " 
+                + "VALUES ((SELECT user_id FROM Users WHERE username = ?), CURDATE(), '09:00:00', '17:00:00')";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+            
+            pstmt.setString(1,username);
+            
+            int rowsInserted = pstmt.executeUpdate();
+            if(rowsInserted > 0){
+                javax.swing.JOptionPane.showMessageDialog(this,"Availability added succesfully");
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error saving availability " + e.getMessage());
+        }
+        
+        
+    }//GEN-LAST:event_confirmButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        com.landingpage.barberLandingPage landingPage = new com.landingpage.barberLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
