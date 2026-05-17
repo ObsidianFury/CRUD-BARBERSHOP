@@ -53,7 +53,7 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jButton6" min="-2" max="-2" attributes="0"/>
+                  <Component id="backButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -62,14 +62,14 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace pref="71" max="32767" attributes="0"/>
-                  <Component id="jButton6" min="-2" max="-2" attributes="0"/>
+                  <Component id="backButton" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JButton" name="jButton6">
+        <Component class="javax.swing.JButton" name="backButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Back"/>
           </Properties>
@@ -178,11 +178,11 @@
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="jButton3" min="-2" pref="140" max="-2" attributes="0"/>
+                          <Component id="modifyButton" min="-2" pref="140" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jButton2" min="-2" pref="140" max="-2" attributes="0"/>
+                          <Component id="selectButton" min="-2" pref="140" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jButton1" min="-2" pref="140" max="-2" attributes="0"/>
+                          <Component id="clearButton" min="-2" pref="140" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
@@ -190,20 +190,20 @@
                               <Component id="jSeparator2" alignment="0" max="32767" attributes="0"/>
                               <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel6" alignment="0" min="-2" pref="138" max="-2" attributes="0"/>
-                              <Component id="jTextField1" alignment="0" pref="225" max="32767" attributes="0"/>
+                              <Component id="usernameField" alignment="0" pref="225" max="32767" attributes="0"/>
                               <Component id="jLabel3" alignment="0" min="-2" pref="138" max="-2" attributes="0"/>
-                              <Component id="jTextField2" alignment="0" pref="225" max="32767" attributes="0"/>
+                              <Component id="barberField" alignment="0" pref="225" max="32767" attributes="0"/>
                               <Component id="jLabel4" alignment="0" min="-2" pref="138" max="-2" attributes="0"/>
-                              <Component id="jTextField3" alignment="0" pref="225" max="32767" attributes="0"/>
+                              <Component id="timeDateField" alignment="0" pref="225" max="32767" attributes="0"/>
                               <Component id="jLabel5" alignment="0" min="-2" pref="138" max="-2" attributes="0"/>
-                              <Component id="jTextField4" alignment="0" pref="225" max="32767" attributes="0"/>
+                              <Component id="serviceField" alignment="0" pref="225" max="32767" attributes="0"/>
                               <Component id="jSeparator4" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jDateChooser1" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
-                              <Component id="jComboBox2" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="barberComboBox" max="32767" attributes="0"/>
+                              <Component id="serviceComboBox" alignment="0" max="32767" attributes="0"/>
+                              <Component id="timeDateChooser" alignment="0" pref="135" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="jScrollPane2" min="-2" pref="521" max="-2" attributes="0"/>
@@ -221,15 +221,15 @@
                       <Group type="102" attributes="0">
                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                          <Component id="jTextField1" min="-2" pref="34" max="-2" attributes="0"/>
+                          <Component id="usernameField" min="-2" pref="34" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jSeparator1" min="-2" pref="14" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jTextField3" min="-2" pref="34" max="-2" attributes="0"/>
-                              <Component id="jDateChooser1" min="-2" max="-2" attributes="0"/>
+                              <Component id="timeDateField" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="timeDateChooser" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jSeparator2" min="-2" pref="17" max="-2" attributes="0"/>
@@ -237,8 +237,8 @@
                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jTextField2" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
-                              <Component id="jComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="barberField" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="barberComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Component id="jSeparator3" min="-2" pref="17" max="-2" attributes="0"/>
@@ -246,8 +246,8 @@
                           <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jTextField4" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
-                              <Component id="jComboBox2" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="serviceField" alignment="3" min="-2" pref="34" max="-2" attributes="0"/>
+                              <Component id="serviceComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jSeparator4" min="-2" pref="10" max="-2" attributes="0"/>
@@ -257,9 +257,9 @@
                           <Component id="jScrollPane2" min="-2" pref="343" max="-2" attributes="0"/>
                           <EmptySpace pref="34" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jButton2" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="jButton1" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="jButton3" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="selectButton" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="clearButton" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
+                              <Component id="modifyButton" alignment="3" min="-2" pref="50" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -290,14 +290,14 @@
             </Component>
           </SubComponents>
         </Container>
-        <Component class="javax.swing.JTextField" name="jTextField1">
+        <Component class="javax.swing.JTextField" name="usernameField">
         </Component>
-        <Component class="javax.swing.JButton" name="jButton1">
+        <Component class="javax.swing.JButton" name="clearButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Clear"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JButton" name="jButton2">
+        <Component class="javax.swing.JButton" name="selectButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Select"/>
           </Properties>
@@ -309,9 +309,9 @@
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField2">
+        <Component class="javax.swing.JTextField" name="barberField">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField2ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="barberFieldActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
@@ -326,9 +326,9 @@
             <Property name="text" type="java.lang.String" value="Service"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField3">
+        <Component class="javax.swing.JTextField" name="timeDateField">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField3ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="timeDateFieldActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator3">
@@ -338,21 +338,21 @@
             <Property name="text" type="java.lang.String" value="Barber"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="jTextField4">
+        <Component class="javax.swing.JTextField" name="serviceField">
           <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField4ActionPerformed"/>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serviceFieldActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator4">
         </Component>
-        <Component class="javax.swing.JButton" name="jButton3">
+        <Component class="javax.swing.JButton" name="modifyButton">
           <Properties>
             <Property name="text" type="java.lang.String" value="Modify"/>
           </Properties>
         </Component>
-        <Component class="com.toedter.calendar.JDateChooser" name="jDateChooser1">
+        <Component class="com.toedter.calendar.JDateChooser" name="timeDateChooser">
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox1">
+        <Component class="javax.swing.JComboBox" name="barberComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
@@ -367,7 +367,7 @@
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox2">
+        <Component class="javax.swing.JComboBox" name="serviceComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
