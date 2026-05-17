@@ -78,7 +78,6 @@ public class barberAvailability extends javax.swing.JFrame {
         jLabel1.setToolTipText("");
 
         usernameShow.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
-        usernameShow.setForeground(java.awt.Color.white);
         jScrollPane1.setViewportView(usernameShow);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
