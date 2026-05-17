@@ -185,6 +185,7 @@ public class customerLandingPage extends javax.swing.JFrame {
         // Opens the appoinment history page for the customer
         com.customerUtils.customerViewAppoinments viewAppoinments = new com.customerUtils.customerViewAppoinments();
         viewAppoinments.setVisible(true);
+        viewAppoinments.setUsername(username);
         this.dispose();
     }//GEN-LAST:event_myAppoinmentsButtonActionPerformed
 
