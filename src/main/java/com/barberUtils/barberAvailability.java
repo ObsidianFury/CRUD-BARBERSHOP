@@ -24,7 +24,47 @@ public class barberAvailability extends javax.swing.JFrame {
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadAvailability();
     }
+    
+    private void loadAvailability(){
+    
+        String username = usernameShow.getText();
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel)jTable1.getModel();
+        
+        // Ορίζουμε τις στήλες του πίνακα
+        model.setColumnIdentifiers(new String[]{"Availability ID", "Date", "Start Time", "End Time"});
+        // Καθαρίζει τον πίνακα πριν φορτώσει τα νέα δεδομένα
+        model.setRowCount(0);
+        
+        // SQL: Παίρνει τις διαθεσιμότητες μόνο για τον συγκεκριμένο κουρέα
+        String sql = "SELECT a.availability_id, a.availability_date, a.start_time, a.end_time FROM Availability a " +
+                    "JOIN Users u ON a.barber_id = u.user_id WHERE u.username = ?";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1,username);
+            
+            try(java.sql.ResultSet rs = pstmt.executeQuery()){
+                
+                while(rs.next()){
+                
+                    // Προσθήκη της κάθε διαθεσιμότητας ως γραμμή στον πίνακα
+                    model.addRow(new Object[]{
+                        rs.getInt("availability_id"),
+                        rs.getString("availability_date"),
+                        rs.getString("start_time"),
+                        rs.getString("end_time")
+                    });
+                    }
+                }
+            }catch(java.sql.SQLException e){
+                javax.swing.JOptionPane.showMessageDialog(this, "Error loading availability " + e.getMessage());
+            }
+            
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
