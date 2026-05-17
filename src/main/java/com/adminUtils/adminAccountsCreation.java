@@ -23,6 +23,38 @@ public class adminAccountsCreation extends javax.swing.JFrame {
     public void setUsername(String username) {
         usernameShow.setText(username);
     }
+    
+    private void loadUsers(){
+    
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        
+        // Ορίζουμε τις στήλες του πίνακα
+        model.setColumnIdentifiers(new String[]{"User ID", "Username", "Email", "Password", "Role"});
+        model.setRowCount(0);
+        
+        // SQL: Επιλέγουμε όλους τους χρήστες εκτός από τους ADMINS
+        String sql = "SELECT user_id, username, email, password, role FROM Users WHERE role IN ('CUSTOMER', 'BARBER') ORDER BY role DESC, username ASC";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            java.sql.ResultSet rs = pstmt.executeQuery()){
+        
+            while(rs.next()){
+            
+                // Προσθήκη γραμμής στον πίνακα
+                model.addRow(new Object[]{
+                    rs.getInt("user_id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("password"),
+                    rs.getString("role")
+                
+                });
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading users: " + e.getMessage());
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -54,16 +86,16 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         createButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         passwordField = new javax.swing.JPasswordField();
-        customerRadioButton = new javax.swing.JRadioButton();
-        barberRadioButton = new javax.swing.JRadioButton();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel6 = new javax.swing.JLabel();
+        roleComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -143,6 +175,7 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTable1);
 
         clearButton.setText("Clear");
+        clearButton.addActionListener(this::clearButtonActionPerformed);
 
         jLabel3.setText("Username:");
 
@@ -151,15 +184,13 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         emailField.addActionListener(this::emailFieldActionPerformed);
 
         createButton.setText("Create");
+        createButton.addActionListener(this::createButtonActionPerformed);
 
         jLabel5.setText("Password:");
 
-        customerRadioButton.setText("Customer");
-        customerRadioButton.addActionListener(this::customerRadioButtonActionPerformed);
+        jLabel6.setText("Role:");
 
-        barberRadioButton.setText("Barber");
-
-        jLabel6.setText("Type:");
+        roleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -176,6 +207,7 @@ public class adminAccountsCreation extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jSeparator1)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(usernameField, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -184,11 +216,9 @@ public class adminAccountsCreation extends javax.swing.JFrame {
                                     .addComponent(emailField, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(barberRadioButton)
                                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(customerRadioButton))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.TRAILING))
+                                    .addComponent(roleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 521, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -201,7 +231,7 @@ public class adminAccountsCreation extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -221,14 +251,12 @@ public class adminAccountsCreation extends javax.swing.JFrame {
                         .addGap(2, 2, 2)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(customerRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(barberRadioButton)
-                        .addGap(23, 23, 23)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(roleComboBox))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 343, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(43, 43, 43)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(clearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
@@ -262,9 +290,68 @@ public class adminAccountsCreation extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_emailFieldActionPerformed
 
-    private void customerRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customerRadioButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customerRadioButtonActionPerformed
+    private void createButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createButtonActionPerformed
+        
+        String username = usernameField.getText().trim();
+        String email = emailField.getText();
+        String password = new String(passwordField.getPassword());
+        String role = roleComboBox.getSelectedItem().toString();
+        
+        // Έλεγχος αν είναι κενά
+        if(username.isEmpty() || email.isEmpty() || password.isEmpty() || role.isEmpty()){
+            javax.swing.JOptionPane.showMessageDialog(this,"Please fill all text filds");
+        }
+        
+        // Έλεγχος εγκυρότητας ρόλου (για να μην γράψει ο admin ό,τι θέλει)
+        if (!role.equals("CUSTOMER") && !role.equals("BARBER")) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ο ρόλος πρέπει να είναι υποχρεωτικά 'CUSTOMER' ή 'BARBER'.");
+        }
+        
+        String sql = "INSERT INTO Users (username, email, password, role) VALUES (?,?,?,?)";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1,username);
+            pstmt.setString(2,email);
+            pstmt.setString(3,password);
+            pstmt.setString(4,role);
+            
+            int rowsInserted = pstmt.executeUpdate();
+            if(rowsInserted > 0){
+                javax.swing.JOptionPane.showMessageDialog(this,"Account created succesfully");
+                
+                // Καθαρισμός των πεδίων
+                usernameField.setText("");
+                emailField.setText("");
+                passwordField.setText("");
+                
+                loadUsers();
+            
+            }
+        }catch(java.sql.SQLException e){
+            if(e.getErrorCode() == 1062){
+                javax.swing.JOptionPane.showMessageDialog(this,"Email or username already being used");
+            }
+            else{
+                javax.swing.JOptionPane.showMessageDialog(this,"Error creating account: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_createButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        com.landingpage.adminLandingPage landingPage = new  com.landingpage.adminLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        //Clears the text fields
+        usernameField.setText("");
+        emailField.setText("");
+        passwordField.setText("");
+    }//GEN-LAST:event_clearButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -293,11 +380,9 @@ public class adminAccountsCreation extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
-    private javax.swing.JRadioButton barberRadioButton;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton clearButton;
     private javax.swing.JButton createButton;
-    private javax.swing.JRadioButton customerRadioButton;
     private javax.swing.JTextField emailField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -315,6 +400,7 @@ public class adminAccountsCreation extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTable jTable1;
     private javax.swing.JPasswordField passwordField;
+    private javax.swing.JComboBox<String> roleComboBox;
     private javax.swing.JTextField usernameField;
     private javax.swing.JTextPane usernameShow;
     // End of variables declaration//GEN-END:variables
