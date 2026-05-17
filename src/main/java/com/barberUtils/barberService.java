@@ -24,6 +24,40 @@ public class barberService extends javax.swing.JFrame {
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadServices();
+    }
+    
+    
+    // Μέθοδος που τραβάει τις υπηρεσίες του συγκεκριμένου κουρέα από τη MySQL
+    private void loadServices(){
+    
+        String username = usernameShow.getText();
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        
+        // Ορίζουμε τις στήλες του πίνακα
+        model.setColumnIdentifiers(new String[]{"Service ID","Service Name"});
+        // Καθαρίζει τα παλιά δεδομένα πριν φορτώσει τα νέα
+        model.setRowCount(0);
+        
+        // SQL: Παίρνει τις υπηρεσίες μόνο για τον κουρέα με αυτό το username
+        String sql = "SELECT s.service_id, s.service_name FROM Services s " + "JOIN Users u ON s.barber_id= u.user_id WHERE u.username = ?";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1,username);
+            
+            try(java.sql.ResultSet rs = pstmt.executeQuery()){
+            
+                while(rs.next()){
+                    // Προσθήκη γραμμής στον πίνακα
+                    model.addRow(new Object[]{rs.getInt("service_id"), rs.getString("service_name")});
+                
+                }
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading services " + e.getMessage());
+        }
     }
 
     /**
@@ -36,15 +70,15 @@ public class barberService extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
+        backButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         usernameShow = new javax.swing.JTextPane();
         jLabel2 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        confirmButton = new javax.swing.JButton();
+        serviceField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -53,7 +87,8 @@ public class barberService extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
-        jButton6.setText("Back");
+        backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -61,14 +96,14 @@ public class barberService extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton6)
+                .addComponent(backButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(71, Short.MAX_VALUE)
-                .addComponent(jButton6)
+                .addComponent(backButton)
                 .addContainerGap())
         );
 
@@ -119,7 +154,8 @@ public class barberService extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jButton1.setText("Confirm");
+        confirmButton.setText("Confirm");
+        confirmButton.addActionListener(this::confirmButtonActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel3.setText("Declare type of service:");
@@ -144,8 +180,8 @@ public class barberService extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(serviceField, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(confirmButton, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 473, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -159,9 +195,9 @@ public class barberService extends javax.swing.JFrame {
                         .addGap(54, 54, 54)
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(serviceField, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(confirmButton, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(16, 16, 16)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -189,6 +225,48 @@ public class barberService extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
+        
+        String serviceName = serviceField.getText().trim();
+        String username = usernameShow.getText();
+        
+        if(serviceName.isEmpty()){
+            javax.swing.JOptionPane.showMessageDialog(this,"Please enter the name of service");
+        
+        }
+        
+        // SQL: Βρίσκει αυτόματα το user_id του κουρέα από το username του και κάνει INSERT την υπηρεσία
+        String sql = "INSERT INTO Services (barber_id, service_name) VALUES ((SELECT user_id FROM Users WHERE username = ?), ?)";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1, username);
+            pstmt.setString(2, serviceName);
+            
+            int rowsInserted = pstmt.executeUpdate();
+            if(rowsInserted > 0){
+                javax.swing.JOptionPane.showMessageDialog(this, "Service added succesfully");
+                serviceField.setText("");
+                loadServices();
+                
+            
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error adding service: " + e.getMessage());
+        }
+    }//GEN-LAST:event_confirmButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        
+        com.landingpage.barberLandingPage landingPage = new com.landingpage.barberLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+        
+        
+    }//GEN-LAST:event_backButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -215,8 +293,8 @@ public class barberService extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton backButton;
+    private javax.swing.JButton confirmButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -226,7 +304,7 @@ public class barberService extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField serviceField;
     private javax.swing.JTextPane usernameShow;
     // End of variables declaration//GEN-END:variables
 }
