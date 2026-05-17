@@ -24,6 +24,55 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadAppoinments();
+    }
+    
+    
+    // Μέθοδος που τραβάει τα ραντεβού του συγκεκριμένου κουρέα από τη MySQL
+    private void loadAppoinments(){
+        
+        String username = usernameShow.getText();
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        
+        // Ορίζουμε τις στήλες του πίνακα
+        model.setColumnIdentifiers(new String[]{"ID","Customer Name","Service","Time","Status"});
+        // Καθαρίζει τον πίνακα πριν φορτώσει τα νέα δεδομένα
+        model.setRowCount(0);
+        
+        /* SQL Query: Παίρνει τα στοιχεία του ραντεβού κάνοντας JOIN 
+           με τους Πελάτες (c) και τις Υπηρεσίες (s) για τον Κουρέα (b)
+        */
+        
+        String sql = "SELECT a.appointment_id, c.username AS customer_name, s.service_name, " +
+                     "a.appointment_date, a.appointment_time, a.status " + 
+                     "FROM Appointment a " + "JOIN Users b ON a.barber_id = b.user_id " + 
+                     "JOIN Users c ON a.customer_id = c.user_id " + 
+                     "JOIN Services s ON a.service_id = s.service_id " + 
+                     "WHERE b.username = ? " + "ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1,username);
+            
+            try(java.sql.ResultSet rs = pstmt.executeQuery()){
+                
+                while(rs.next()){
+                    // Προσθήκη του κάθε ραντεβού ως γραμμή στον πίνακα
+                    
+                    model.addRow(new Object[]{
+                    rs.getInt("appoinment_id"),
+                    rs.getString("customer_name"),
+                    rs.getString("service_name"),
+                    rs.getString("appoinment_date"),
+                    rs.getString("appoinment_time"),
+                    rs.getString("status")
+                    });
+                }
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading rantevous: " + e.getMessage());
+        }
     }
 
     /**
@@ -51,6 +100,7 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -163,6 +213,14 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        
+        com.landingpage.barberLandingPage landingPage = new com.landingpage.barberLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
