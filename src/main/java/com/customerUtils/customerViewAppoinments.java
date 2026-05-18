@@ -34,19 +34,19 @@ public class customerViewAppoinments extends javax.swing.JFrame {
         
         // Ορίζουμε τις στήλες του πίνακα
         model.setColumnIdentifiers(new String[]{
-        "Appointment ID", "Barber", "Service", "Date", "Time", "Status"
+            "Appointment ID", "Barber", "Service", "Date", "Status"
         });
         model.setRowCount(0);
         
         // SQL Query
         String sql = "SELECT a.appointment_id, b.username AS barber_name, s.service_name, " +
-                     "a.appointment_date, a.appointment_time, a.status " +
-                     "FROM Appointments a " +
-                     "JOIN Users c ON a.customer_id = c.user_id " +
-                     "JOIN Users b ON a.barber_id = b.user_id " +
-                     "JOIN Services s ON a.service_id = s.service_id " +
+                     "a.appointment_date, a.status " +
+                     "FROM appointments a " +
+                     "JOIN users c ON a.customer_id = c.user_id " +
+                     "JOIN users b ON a.barber_id = b.user_id " +
+                     "JOIN services s ON a.service_id = s.service_id " +
                      "WHERE c.username = ? " +
-                     "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+                     "ORDER BY a.appointment_date DESC";
         
         try (java.sql.Connection conn = com.database.DBConnection.getConnection();
              java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -60,8 +60,7 @@ public class customerViewAppoinments extends javax.swing.JFrame {
                         rs.getInt("appointment_id"), 
                         rs.getString("barber_name"), 
                         rs.getString("service_name"), 
-                        rs.getString("appointment_date"), 
-                        rs.getString("appointment_time"), 
+                        rs.getString("appointment_date"),  
                         rs.getString("status")
                     });
                 }

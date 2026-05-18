@@ -23,7 +23,7 @@ public class customerLandingPage extends javax.swing.JFrame {
     String username;
     public void setUsername(String username) {
         usernameShow.setText(username);
-        username = this.username;
+        this.username = username;
     }
 
     /**

@@ -308,7 +308,7 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
         
         
         String date = dateField.getText().trim();
-        String time = "12:00:00";
+        
         
         
         if(date.isEmpty()){
@@ -316,21 +316,21 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
         }
         
         //SQL
-        String sql = "INSERT INTO Appointments (customer_id, barber_id, service_id, appointment_date, appointment_time, status)" +
-                     "VALUES (" + "(SELECT user_id FROM Users WHERE username = ? AND role = 'CUSTOMER'), " +
-                     "(SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER'), " +
-                     "(SELECT service_id FROM Services WHERE service_name = ? AND barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER') LIMIT 1), " +
-                     "?, ?, 'PENDING')";
+        String sql = "INSERT INTO appointments (customer_id, barber_id, service_id, appointment_date, status) " +
+                     "VALUES (" +
+                     "(SELECT user_id FROM users WHERE username = ? AND role = 'CUSTOMER'), " +
+                     "(SELECT user_id FROM users WHERE username = ? AND role = 'BARBER'), " +
+                     "(SELECT service_id FROM services WHERE service_name = ? AND barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER') LIMIT 1), " +
+                     "?, 'PENDING')";
         
         try (java.sql.Connection conn = com.database.DBConnection.getConnection();
          java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
          
         pstmt.setString(1, customerName);
-        pstmt.setString(2, barberName);
-        pstmt.setString(3, serviceName);
-        pstmt.setString(4, barberName);
-        pstmt.setString(5, date); // yyyy-MM-dd από το dateField
-        pstmt.setString(6, time); // Η ώρα
+            pstmt.setString(2, barberName);
+            pstmt.setString(3, serviceName);
+            pstmt.setString(4, barberName);
+            pstmt.setString(5, date); // Εδώ μπαίνει η ημερομηνία
 
         int rowsInserted = pstmt.executeUpdate();
         if (rowsInserted > 0) {
