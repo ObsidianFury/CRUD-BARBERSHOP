@@ -23,6 +23,53 @@ public class customerViewAppoinments extends javax.swing.JFrame {
     }
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadCustomerAppointments();
+    }
+    
+    
+    private void loadCustomerAppointments(){
+        
+        String currentCustomer = usernameShow.getText();
+        javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
+        
+        // Ορίζουμε τις στήλες του πίνακα
+        model.setColumnIdentifiers(new String[]{
+        "Appointment ID", "Barber", "Service", "Date", "Time", "Status"
+        });
+        model.setRowCount(0);
+        
+        // SQL Query
+        String sql = "SELECT a.appointment_id, b.username AS barber_name, s.service_name, " +
+                     "a.appointment_date, a.appointment_time, a.status " +
+                     "FROM Appointments a " +
+                     "JOIN Users c ON a.customer_id = c.user_id " +
+                     "JOIN Users b ON a.barber_id = b.user_id " +
+                     "JOIN Services s ON a.service_id = s.service_id " +
+                     "WHERE c.username = ? " +
+                     "ORDER BY a.appointment_date DESC, a.appointment_time DESC";
+        
+        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, currentCustomer);
+            
+            try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // Προσθήκη του κάθε ραντεβού ως γραμμή στον πίνακα
+                    model.addRow(new Object[]{
+                        rs.getInt("appointment_id"), 
+                        rs.getString("barber_name"), 
+                        rs.getString("service_name"), 
+                        rs.getString("appointment_date"), 
+                        rs.getString("appointment_time"), 
+                        rs.getString("status")
+                    });
+                }
+            }
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Eroor loading data: " + e.getMessage());
+        }
+        
     }
 
     /**
@@ -51,6 +98,7 @@ public class customerViewAppoinments extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -139,10 +187,10 @@ public class customerViewAppoinments extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(638, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -174,6 +222,13 @@ public class customerViewAppoinments extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        com.landingpage.customerLandingPage landingPage = new com.landingpage.customerLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments

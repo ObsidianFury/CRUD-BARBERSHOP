@@ -20,12 +20,80 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
      */
     public customerCreateAppoinment() {
         initComponents();
+        setupListeners();
     }
     
     public void setUsername(String username) {
         usernameShow.setText(username);
+        loadBarbers();
     }
+    
+    // Φορτώνει όλους τους Κουρείς
+    private void loadBarbers(){
+    
+        barberComboBox.removeAllItems();
+        String sql = "SELECT username FROM Users WHERE role =  'BARBER'";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            java.sql.ResultSet rs = pstmt.executeQuery()){
+        
+        
+            while(rs.next()){
+                barberComboBox.addItem(rs.getString("username"));
+                
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading barbers: " + e.getMessage());
+        }
+    }
+    
+    private void loadServicesForBarber(String barberName){
+    
+        serviceComboBox.removeAllItems();
+        
+        String sql = "SELECT s.service_name FROM Services s JOIN Users u ON s.barber_id = u.user_id WHERE u.username = ?";
+        
+        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
+        
+            pstmt.setString(1,barberName);
+            try(java.sql.ResultSet rs = pstmt.executeQuery()){
+            
+                while(rs.next()){
+                
+                    serviceComboBox.addItem(rs.getString("service_name"));
+                }
+            }
+        }catch(java.sql.SQLException e){
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading services: " + e.getMessage());
+            
+        }
+        
+    }
+    
 
+
+    private void setupListeners(){
+        barberComboBox.addActionListener(e -> {
+            if (barberComboBox.getSelectedItem() != null) {
+                String selectedBarber = barberComboBox.getSelectedItem().toString();
+                loadServicesForBarber(selectedBarber);
+            }
+        });
+        
+        dateChooser.addPropertyChangeListener("date", evt -> {
+        if (dateChooser.getDate() != null) {
+            // Μορφοποίηση σε στυλ Έτος-Μήνας-Ημέρα (όπως το θέλει η MySQL)
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = sdf.format(dateChooser.getDate());
+            
+            // Τοποθέτηση του κειμένου στο dateField
+            dateField.setText(formattedDate);
+        }
+    });
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,6 +127,7 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(0, 204, 204));
 
         backButton.setText("Back");
+        backButton.addActionListener(this::backButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -139,6 +208,7 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
 
         confirmButton.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         confirmButton.setText("Confirm");
+        confirmButton.addActionListener(this::confirmButtonActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setText("Availability:");
@@ -225,6 +295,64 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
+        String customerName = usernameShow.getText();
+        
+        if(barberComboBox.getSelectedItem() == null || serviceComboBox.getSelectedItem() == null){
+            javax.swing.JOptionPane.showMessageDialog(this,"Choose barber and service");
+        }
+        
+        String barberName = barberComboBox.getSelectedItem().toString();
+        String serviceName = serviceComboBox.getSelectedItem().toString();
+        
+        
+        String date = dateField.getText().trim();
+        String time = "12:00:00";
+        
+        
+        if(date.isEmpty()){
+            javax.swing.JOptionPane.showMessageDialog(this, "Please enter date.");
+        }
+        
+        //SQL
+        String sql = "INSERT INTO Appointments (customer_id, barber_id, service_id, appointment_date, appointment_time, status)" +
+                     "VALUES (" + "(SELECT user_id FROM Users WHERE username = ? AND role = 'CUSTOMER'), " +
+                     "(SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER'), " +
+                     "(SELECT service_id FROM Services WHERE service_name = ? AND barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER') LIMIT 1), " +
+                     "?, ?, 'PENDING')";
+        
+        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
+         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+         
+        pstmt.setString(1, customerName);
+        pstmt.setString(2, barberName);
+        pstmt.setString(3, serviceName);
+        pstmt.setString(4, barberName);
+        pstmt.setString(5, date); // yyyy-MM-dd από το dateField
+        pstmt.setString(6, time); // Η ώρα
+
+        int rowsInserted = pstmt.executeUpdate();
+        if (rowsInserted > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Rantevous entered succesfully");
+            dateField.setText("");
+            dateChooser.setDate(null);
+        }
+    } catch (java.sql.SQLException ex) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Error inserting: " + ex.getMessage());
+    }
+        
+        
+        
+        
+    }//GEN-LAST:event_confirmButtonActionPerformed
+
+    private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
+        com.landingpage.customerLandingPage landingPage = new com.landingpage.customerLandingPage();
+        landingPage.setUsername(usernameShow.getText());
+        landingPage.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_backButtonActionPerformed
 
     /**
      * @param args the command line arguments
