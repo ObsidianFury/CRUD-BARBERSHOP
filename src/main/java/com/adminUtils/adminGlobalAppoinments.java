@@ -36,15 +36,18 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
     private void loadAllAppointments(){
     
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
-        model.setColumnIdentifiers(new String[]{"ID","Customer","Barber","Service","Date","Time","Status"});
+        
+        // Αφαίρεση της στήλης "Time"
+        model.setColumnIdentifiers(new String[]{"ID","Customer","Barber","Service","Date","Status"});
         model.setRowCount(0);
         
+        // Πεζά γράμματα πινάκων, αφαίρεση του a.appointment_time
         String sql = "SELECT a.appointment_id, c.username AS customer_name, b.username AS barber_name, " +
-                     "s.service_name, a.appointment_date, a.appointment_time, a.status " +
-                     "FROM Appointments a " +
-                     "JOIN Users c ON a.customer_id = c.user_id " +
-                     "JOIN Users b ON a.barber_id = b.user_id " +
-                     "JOIN Services s ON a.service_id = s.service_id " +
+                     "s.service_name, a.appointment_date, a.status " +
+                     "FROM appointments a " +
+                     "JOIN users c ON a.customer_id = c.user_id " +
+                     "JOIN users b ON a.barber_id = b.user_id " +
+                     "JOIN services s ON a.service_id = s.service_id " +
                      "ORDER BY a.appointment_date DESC";
         
         try(java.sql.Connection conn = com.database.DBConnection.getConnection();
@@ -53,13 +56,12 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         
             while(rs.next()){
                 model.addRow(new Object[]{
-                rs.getInt("appointment_id"),
-                rs.getString("customer_name"),
-                rs.getString("barber_name"),
-                rs.getString("service_name"),
-                rs.getString("appointment_date"),
-                rs.getString("appointment_time"),
-                rs.getString("status")
+                    rs.getInt("appointment_id"),
+                    rs.getString("customer_name"),
+                    rs.getString("barber_name"),
+                    rs.getString("service_name"),
+                    rs.getString("appointment_date"),
+                    rs.getString("status")
                 });
             }
         }catch(java.sql.SQLException e){
@@ -71,29 +73,26 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
     //Μέθοδος που γεμίζει αυτόματα τα ComboBoxes από τη βάση δεδομένων
     private void loadComboBoxData(){
     
-        barberComboBox.removeAllItems();
+       barberComboBox.removeAllItems();
         serviceComboBox.removeAllItems();
         
-        // Φόρτωση Κουρέων
-        String barberSql = "SELECT username FROM Users WHERE role = 'BARBER'";
+        // Φόρτωση Κουρέων (πεζά γράμματα στο users)
+        String barberSql = "SELECT username FROM users WHERE role = 'BARBER'";
         try(java.sql.Connection conn = com.database.DBConnection.getConnection();
             java.sql.PreparedStatement pstmt = conn.prepareStatement(barberSql);
             java.sql.ResultSet rs = pstmt.executeQuery()){
-        
             while(rs.next()){
                 barberComboBox.addItem(rs.getString("username"));
             }
         }catch(java.sql.SQLException e){
-        
             javax.swing.JOptionPane.showMessageDialog(this,"Error loading barber combobox: " + e.getMessage());
         }
         
-        // Φόρτωση Υπηρεσιών
-        String serviceSql = "SELECT DISTINCT service_name FROM Services";
+        // Φόρτωση Υπηρεσιών (πεζά γράμματα στο services)
+        String serviceSql = "SELECT DISTINCT service_name FROM services";
         try(java.sql.Connection conn = com.database.DBConnection.getConnection();
             java.sql.PreparedStatement pstmt = conn.prepareStatement(serviceSql);
             java.sql.ResultSet rs = pstmt.executeQuery()){
-        
             while(rs.next()){
                 serviceComboBox.addItem(rs.getString("service_name"));
             }
@@ -119,19 +118,11 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
             }
         });
         
-        // Όταν αλλάζει η ημερομηνία στο Date Chooser, ενημερώνεται το Time-Date Field (κρατώντας την ώρα)
+        // Όταν αλλάζει η ημερομηνία στο Date Chooser, ενημερώνεται ΜΟΝΟ το πεδίο με την ημερομηνία
         timeDateChooser.addPropertyChangeListener("date", evt -> {
             if (timeDateChooser.getDate() != null) {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                String formattedDate = sdf.format(timeDateChooser.getDate());
-                
-                String currentText = timeDateField.getText();
-                if (currentText.contains(" ")) {
-                    String[] parts = currentText.split(" ");
-                    timeDateField.setText(formattedDate + " " + parts[1]);
-                } else {
-                    timeDateField.setText(formattedDate + " 12:00:00"); // Default ώρα αν δεν υπήρχε
-                }
+                timeDateField.setText(sdf.format(timeDateChooser.getDate()));
             }
         });
         
@@ -148,9 +139,9 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
             barberField.setText(jTable1.getValueAt(selectedRow, 2).toString());
             serviceField.setText(jTable1.getValueAt(selectedRow, 3).toString());
             
+            // Η ημερομηνία είναι πλέον στην 4η στήλη, καθώς αφαιρέσαμε το Time
             String date = jTable1.getValueAt(selectedRow, 4).toString();
-            String time = jTable1.getValueAt(selectedRow, 5).toString();
-            timeDateField.setText(date + " " + time);
+            timeDateField.setText(date);
             
             // Ενημέρωση και του γραφικού ημερολογίου (Date Chooser)
             try {
@@ -170,39 +161,28 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
             
             String barberName = barberField.getText().trim();
             String serviceName = serviceField.getText().trim();
-            String dateTimeStr = timeDateField.getText().trim();
+            String datePart = timeDateField.getText().trim(); // Διαβάζουμε μόνο ημερομηνία πια
             
-            if (barberName.isEmpty() || serviceName.isEmpty() || dateTimeStr.isEmpty()) {
+            if (barberName.isEmpty() || serviceName.isEmpty() || datePart.isEmpty()) {
                 javax.swing.JOptionPane.showMessageDialog(this, "Τα πεδία δεν πρέπει να είναι κενά.");
                 return;
             }
             
-            // Διαχωρισμός ημερομηνίας και ώρας από το TextField
-            String datePart = dateTimeStr;
-            String timePart = "12:00:00"; 
-            if (dateTimeStr.contains(" ")) {
-                String[] parts = dateTimeStr.split(" ");
-                datePart = parts[0];
-                timePart = parts[1];
-            }
-            
-            // SQL Query: Ενημερώνει το ραντεβού βρίσκοντας δυναμικά τα IDs του Barber και του Service
-            String sql = "UPDATE Appointments SET " +
+            // SQL Query: Αφαίρεση του appointment_time και πεζά γράμματα
+            String sql = "UPDATE appointments SET " +
                          "appointment_date = ?, " +
-                         "appointment_time = ?, " +
-                         "barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER'), " +
-                         "service_id = (SELECT service_id FROM Services WHERE service_name = ? AND barber_id = (SELECT user_id FROM Users WHERE username = ? AND role = 'BARBER') LIMIT 1) " +
+                         "barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER'), " +
+                         "service_id = (SELECT service_id FROM services WHERE service_name = ? AND barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER') LIMIT 1) " +
                          "WHERE appointment_id = ?";
                          
             try (java.sql.Connection conn = com.database.DBConnection.getConnection();
                  java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
                  
                 pstmt.setString(1, datePart);
-                pstmt.setString(2, timePart);
-                pstmt.setString(3, barberName);
-                pstmt.setString(4, serviceName);
-                pstmt.setString(5, barberName);
-                pstmt.setInt(6, selectedAppointmentId);
+                pstmt.setString(2, barberName);
+                pstmt.setString(3, serviceName);
+                pstmt.setString(4, barberName);
+                pstmt.setInt(5, selectedAppointmentId);
                 
                 int rowsUpdated = pstmt.executeUpdate();
                 if (rowsUpdated > 0) {

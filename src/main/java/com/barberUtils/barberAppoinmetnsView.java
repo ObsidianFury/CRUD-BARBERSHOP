@@ -34,21 +34,19 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
         String username = usernameShow.getText();
         javax.swing.table.DefaultTableModel model = (javax.swing.table.DefaultTableModel) jTable1.getModel();
         
-        // Ορίζουμε τις στήλες του πίνακα
-        model.setColumnIdentifiers(new String[]{"ID","Customer Name","Service","Time","Status"});
-        // Καθαρίζει τον πίνακα πριν φορτώσει τα νέα δεδομένα
+        // Ορίζουμε τις στήλες του πίνακα (Χωρίς το Time)
+        model.setColumnIdentifiers(new String[]{"ID","Customer Name","Service","Date","Status"});
         model.setRowCount(0);
         
-        /* SQL Query: Παίρνει τα στοιχεία του ραντεβού κάνοντας JOIN 
-           με τους Πελάτες (c) και τις Υπηρεσίες (s) για τον Κουρέα (b)
-        */
-        
+        // SQL Query: Πεζά γράμματα στους πίνακες και αφαίρεση του appointment_time
         String sql = "SELECT a.appointment_id, c.username AS customer_name, s.service_name, " +
-                     "a.appointment_date, a.appointment_time, a.status " + 
-                     "FROM Appointment a " + "JOIN Users b ON a.barber_id = b.user_id " + 
-                     "JOIN Users c ON a.customer_id = c.user_id " + 
-                     "JOIN Services s ON a.service_id = s.service_id " + 
-                     "WHERE b.username = ? " + "ORDER BY a.appointment_date ASC, a.appointment_time ASC";
+                     "a.appointment_date, a.status " + 
+                     "FROM appointments a " + 
+                     "JOIN users b ON a.barber_id = b.user_id " + 
+                     "JOIN users c ON a.customer_id = c.user_id " + 
+                     "JOIN services s ON a.service_id = s.service_id " + 
+                     "WHERE b.username = ? " + 
+                     "ORDER BY a.appointment_date ASC"; // Ταξινόμηση μόνο με ημερομηνία
         
         try(java.sql.Connection conn = com.database.DBConnection.getConnection();
             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
@@ -59,19 +57,17 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
                 
                 while(rs.next()){
                     // Προσθήκη του κάθε ραντεβού ως γραμμή στον πίνακα
-                    
                     model.addRow(new Object[]{
-                    rs.getInt("appoinment_id"),
-                    rs.getString("customer_name"),
-                    rs.getString("service_name"),
-                    rs.getString("appoinment_date"),
-                    rs.getString("appoinment_time"),
-                    rs.getString("status")
+                        rs.getInt("appointment_id"), // Διορθώθηκε το ορθογραφικό
+                        rs.getString("customer_name"),
+                        rs.getString("service_name"),
+                        rs.getString("appointment_date"), // Διορθώθηκε το ορθογραφικό
+                        rs.getString("status")
                     });
                 }
             }
         }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading rantevous: " + e.getMessage());
+            javax.swing.JOptionPane.showMessageDialog(this,"Error loading appointments: " + e.getMessage());
         }
     }
 
