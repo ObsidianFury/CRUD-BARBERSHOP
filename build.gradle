@@ -50,15 +50,16 @@ tasks.named('test') {
 jar {
     manifest {
         attributes(
-            'Main-Class': 'com.login.Login' // Εδώ ορίζουμε ότι η εφαρμογή ξεκινάει από το Login
+            // Εδώ βάζουμε το "μονοπάτι" για την αρχική οθόνη της εφαρμογής σου
+            'Main-Class': 'com.login.Login' 
         )
     }
     
-    // Πακετάρει μαζί όλα τα απαραίτητα libraries (π.χ. mysql connector, jcalendar)
+    // Αυτή η εντολή λέει στο Gradle να πάρει και όλες τις εξωτερικές βιβλιοθήκες (MySQL, JCalendar)
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     
-    // Αποτρέπει σφάλματα με διπλότυπα αρχεία κατά το πακετάρισμα
+    // Αποτρέπει τυχόν σφάλματα αν υπάρχουν διπλότυπα αρχεία κατά το πακετάρισμα
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
