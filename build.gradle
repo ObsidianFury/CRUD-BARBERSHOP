@@ -46,3 +46,19 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'com.login.Login' // Εδώ ορίζουμε ότι η εφαρμογή ξεκινάει από το Login
+        )
+    }
+    
+    // Πακετάρει μαζί όλα τα απαραίτητα libraries (π.χ. mysql connector, jcalendar)
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    
+    // Αποτρέπει σφάλματα με διπλότυπα αρχεία κατά το πακετάρισμα
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
