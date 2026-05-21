@@ -16,10 +16,9 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation libs.junit.jupiter
-
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Βιβλιοθήκες για το JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
 
     // This dependency is used by the application.
     implementation libs.guava
@@ -62,4 +61,8 @@ jar {
     
     // Αποτρέπει τυχόν σφάλματα αν υπάρχουν διπλότυπα αρχεία κατά το πακετάρισμα
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+test {
+    useJUnitPlatform()
 }
