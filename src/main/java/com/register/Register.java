@@ -198,6 +198,24 @@ public class Register extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Please Fill All the Fields");
             
         }
+        
+        // --- ΑΡΧΗ ΕΛΕΓΧΟΥ (VALIDATION) ---
+        if (!com.utils.ValidationUtils.isValidUsername(username)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Το Username πρέπει να έχει τουλάχιστον 3 χαρακτήρες.");
+            return; // Σταματάει η διαδικασία εδώ, δεν προχωράει στη MySQL
+        }
+        
+        if (!com.utils.ValidationUtils.isValidEmail(email)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Παρακαλώ εισάγετε ένα έγκυρο email (π.χ. user@domain.com).");
+            return;
+        }
+        
+        if (!com.utils.ValidationUtils.isPasswordStrong(password)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Ο κωδικός είναι πολύ αδύναμος. Πρέπει να έχει τουλάχιστον 5 χαρακτήρες.");
+            return;
+        }
+        // --- ΤΕΛΟΣ ΕΛΕΓΧΟΥ ---
+        
         //sql statement
         String sql = "INSERT INTO users (username, email, password, role) VALUES (?,?,?,'CUSTOMER')";
         

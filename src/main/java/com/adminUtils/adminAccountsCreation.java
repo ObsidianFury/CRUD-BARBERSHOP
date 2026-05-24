@@ -293,9 +293,26 @@ public class adminAccountsCreation extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this,"Please fill all text filds");
         }
         
-        // Έλεγχος εγκυρότητας ρόλου (για να μην γράψει ο admin ό,τι θέλει)
-        if (!role.equals("CUSTOMER") && !role.equals("BARBER")) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ο ρόλος πρέπει να είναι υποχρεωτικά 'CUSTOMER' ή 'BARBER'.");
+        // --- ΑΡΧΗ ΕΛΕΓΧΟΥ (VALIDATION) ---
+        if (!com.utils.ValidationUtils.isValidUsername(username)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Το Username πρέπει να έχει τουλάχιστον 3 χαρακτήρες.");
+            return;
+        }
+        
+        if (!com.utils.ValidationUtils.isValidEmail(email)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ εισάγετε ένα έγκυρο email.");
+            return;
+        }
+        
+        if (!com.utils.ValidationUtils.isPasswordStrong(password)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Ο κωδικός πρέπει να έχει τουλάχιστον 5 χαρακτήρες.");
+            return;
+        }
+        
+        //  (JComboBox) για το Role, κάνουμε κι έναν έλεγχο ασφαλείας
+        if (!com.utils.ValidationUtils.isValidRole(role)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Μη έγκυρος ρόλος. Επιτρέπονται μόνο CUSTOMER ή BARBER.");
+            return;
         }
         
         String sql = "INSERT INTO Users (username, email, password, role) VALUES (?,?,?,?)";

@@ -173,6 +173,13 @@ public class Login extends javax.swing.JFrame {
         //password
         String password = new String(passwordField.getPassword());
         
+        // --- ΑΡΧΗ ΕΛΕΓΧΟΥ (VALIDATION) ---
+        if (!com.utils.ValidationUtils.isValidEmail(email) || !com.utils.ValidationUtils.isPasswordStrong(password)) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Λάθος στοιχεία. Το Email δεν έχει @ ή . και ο κωδικός δεν ειναι 5+ χαρακτήρες.");
+            return; // Δεν κάνει καν επικοινωνία με τη MySQL!
+        }
+        // --- ΤΕΛΟΣ ΕΛΕΓΧΟΥ ---
+        
         //sql statement
         String sql = "SELECT username, role FROM users WHERE email = ? AND password = ? ";
         
