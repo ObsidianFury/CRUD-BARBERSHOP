@@ -167,60 +167,53 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_registerButtonActionPerformed
 
     private void signinButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinButtonActionPerformed
-        // TODO add your handling code here:
-        //email
-        String email = emailField.getText();
-        //password
-        String password = new String(passwordField.getPassword());
+        String email = emailField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
         
         // --- ΑΡΧΗ ΕΛΕΓΧΟΥ (VALIDATION) ---
         if (!com.utils.ValidationUtils.isValidEmail(email) || !com.utils.ValidationUtils.isPasswordStrong(password)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Λάθος στοιχεία. Το Email δεν έχει @ ή . και ο κωδικός δεν ειναι 5+ χαρακτήρες.");
+            javax.swing.JOptionPane.showMessageDialog(this, "Λάθος στοιχεία. Το Email δεν έχει @ ή . και ο κωδικός δεν είναι 5+ χαρακτήρες.");
             return; // Δεν κάνει καν επικοινωνία με τη MySQL!
         }
         // --- ΤΕΛΟΣ ΕΛΕΓΧΟΥ ---
         
-        //sql statement
-        String sql = "SELECT username, role FROM users WHERE email = ? AND password = ? ";
+        // 1. Δημιουργία DAO και Service
+        com.database.UserDAO userDAO = new com.database.UserDAO();
+        com.utils.AuthService authService = new com.utils.AuthService(userDAO);
         
-        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-        pstmt.setString(1, email);
-        pstmt.setString(2, password);
-
-        try (java.sql.ResultSet rs = pstmt.executeQuery()) {
-            if (rs.next()) {
-                String role = rs.getString("role");
-                String username = rs.getString("username");
-                javax.swing.JOptionPane.showMessageDialog(this, "Succesfully connected as " + role);
-
-                // Ανακατεύθυνση βάσει ρόλου
-                switch (role) {
-                    case "ADMIN":
-                        com.landingpage.adminLandingPage adminPage = new com.landingpage.adminLandingPage();
-                        adminPage.setUsername(username); 
-                        adminPage.setVisible(true);
-                        break;
-                    case "BARBER":
-                        com.landingpage.barberLandingPage barberPage = new com.landingpage.barberLandingPage();
-                        barberPage.setUsername(username);
-                        barberPage.setVisible(true);
-                        break;
-                    case "CUSTOMER":
-                        com.landingpage.customerLandingPage customerPage = new com.landingpage.customerLandingPage();
-                        customerPage.setUsername(username);
-                        customerPage.setVisible(true);
-                        break;
-                }
-                this.dispose();
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Wrong email or password.");
+        // 2. Εκτέλεση του Use Case 01 (Επικοινωνία με τη Βάση)
+        String[] userDetails = authService.login(email, password);
+        
+        // 3. Αποτέλεσμα
+        if (userDetails != null) {
+            String username = userDetails[0];
+            String role = userDetails[1];
+            
+            javax.swing.JOptionPane.showMessageDialog(this, "Successfully connected as " + role);
+            
+            // Ανακατεύθυνση βάσει ρόλου
+            switch (role) {
+                case "ADMIN":
+                    com.landingpage.adminLandingPage adminPage = new com.landingpage.adminLandingPage();
+                    adminPage.setUsername(username); 
+                    adminPage.setVisible(true);
+                    break;
+                case "BARBER":
+                    com.landingpage.barberLandingPage barberPage = new com.landingpage.barberLandingPage();
+                    barberPage.setUsername(username);
+                    barberPage.setVisible(true);
+                    break;
+                case "CUSTOMER":
+                    com.landingpage.customerLandingPage customerPage = new com.landingpage.customerLandingPage();
+                    customerPage.setUsername(username);
+                    customerPage.setVisible(true);
+                    break;
             }
+            this.dispose(); // Κλείνει το Login window
+            
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Wrong email or password.");
         }
-    } catch (java.sql.SQLException e) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error connecting: " + e.getMessage());
-    }
         
     }//GEN-LAST:event_signinButtonActionPerformed
 
