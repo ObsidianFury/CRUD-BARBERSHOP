@@ -32,4 +32,41 @@ public class UserDAO {
         }
         return null; // Δεν βρέθηκε χρήστης ή έγινε λάθος
     }
+
+
+    public boolean isEmailTaken(String email) {
+        String sql = "SELECT email FROM users WHERE email = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next(); // Αν βρει αποτέλεσμα, το email υπάρχει ήδη (true)
+            }
+        } catch (SQLException e) {
+            System.out.println("Σφάλμα ελέγχου email: " + e.getMessage());
+            return true; // Σε περίπτωση λάθους, επιστρέφουμε true για ασφάλεια (να μην προχωρήσει)
+        }
+    }
+    
+    
+    // 2. Δημιουργία νέου χρήστη
+    public boolean createUser(String username, String email, String password, String role) {
+        String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, username);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.setString(4, role.toUpperCase());
+            
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0; // Αν επηρεάστηκε έστω 1 γραμμή, η δημιουργία πέτυχε!
+        } catch (SQLException e) {
+            System.out.println("Σφάλμα δημιουργίας χρήστη: " + e.getMessage());
+            return false;
+        }
+    }
+    
 }
