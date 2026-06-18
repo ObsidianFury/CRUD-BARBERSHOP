@@ -17,13 +17,13 @@ repositories {
 
 dependencies {
     // Βιβλιοθήκες για το JUnit 5
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.14.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.14.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Βιβλιοθήκες για το Mockito (Mock Tests)
-    testImplementation 'org.mockito:mockito-core:5.7.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.7.0'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
 
     // This dependency is used by the application.
     implementation libs.guava
@@ -37,7 +37,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -49,6 +49,8 @@ application {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+
+    jvmArgs('-XX:+EnableDynamicAgentLoading')
 }
 
 jar {
