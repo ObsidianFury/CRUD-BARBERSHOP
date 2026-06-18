@@ -21,6 +21,10 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    // Βιβλιοθήκες για το Mockito (Mock Tests)
+    testImplementation 'org.mockito:mockito-core:5.7.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.7.0'
+
     // This dependency is used by the application.
     implementation libs.guava
 
@@ -50,7 +54,7 @@ tasks.named('test') {
 jar {
     manifest {
         attributes(
-            // Εδώ βάζουμε το "μονοπάτι" για την αρχική οθόνη της εφαρμογής σου
+            
             'Main-Class': 'com.login.Login' 
         )
     }
