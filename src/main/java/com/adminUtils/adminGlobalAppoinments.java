@@ -41,31 +41,13 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         model.setColumnIdentifiers(new String[]{"ID","Customer","Barber","Service","Date","Status"});
         model.setRowCount(0);
         
-        // Πεζά γράμματα πινάκων, αφαίρεση του a.appointment_time
-        String sql = "SELECT a.appointment_id, c.username AS customer_name, b.username AS barber_name, " +
-                     "s.service_name, a.appointment_date, a.status " +
-                     "FROM appointments a " +
-                     "JOIN users c ON a.customer_id = c.user_id " +
-                     "JOIN users b ON a.barber_id = b.user_id " +
-                     "JOIN services s ON a.service_id = s.service_id " +
-                     "ORDER BY a.appointment_date DESC";
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
-            java.sql.ResultSet rs = pstmt.executeQuery()){
-        
-            while(rs.next()){
-                model.addRow(new Object[]{
-                    rs.getInt("appointment_id"),
-                    rs.getString("customer_name"),
-                    rs.getString("barber_name"),
-                    rs.getString("service_name"),
-                    rs.getString("appointment_date"),
-                    rs.getString("status")
-                });
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage());
+        java.util.List<String[]> appointments = service.getAllAppointments();
+
+        for (String[] row : appointments) {
+            model.addRow(row);
         }
     }
     

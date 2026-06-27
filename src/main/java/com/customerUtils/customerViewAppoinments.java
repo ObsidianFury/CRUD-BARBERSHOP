@@ -38,35 +38,15 @@ public class customerViewAppoinments extends javax.swing.JFrame {
         });
         model.setRowCount(0);
         
-        // SQL Query
-        String sql = "SELECT a.appointment_id, b.username AS barber_name, s.service_name, " +
-                     "a.appointment_date, a.status " +
-                     "FROM appointments a " +
-                     "JOIN users c ON a.customer_id = c.user_id " +
-                     "JOIN users b ON a.barber_id = b.user_id " +
-                     "JOIN services s ON a.service_id = s.service_id " +
-                     "WHERE c.username = ? " +
-                     "ORDER BY a.appointment_date DESC";
+       com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-             
-            pstmt.setString(1, currentCustomer);
-            
-            try (java.sql.ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    // Προσθήκη του κάθε ραντεβού ως γραμμή στον πίνακα
-                    model.addRow(new Object[]{
-                        rs.getInt("appointment_id"), 
-                        rs.getString("barber_name"), 
-                        rs.getString("service_name"), 
-                        rs.getString("appointment_date"),  
-                        rs.getString("status")
-                    });
-                }
-            }
-        } catch (java.sql.SQLException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Eroor loading data: " + e.getMessage());
+        String customerName = usernameShow.getText().trim();
+        java.util.List<String[]> appointments = service.getCustomerAppointments(customerName);
+
+        // Γεμίζουμε τον πίνακα δυναμικά!
+        for (String[] row : appointments) {
+            model.addRow(row);
         }
         
     }

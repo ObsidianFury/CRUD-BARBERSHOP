@@ -89,4 +89,23 @@ public class AppointmentServiceTest {
         assertTrue(result.contains("John"));
         verify(mockDAO, times(1)).getBarbers();
     }
+    
+    @Test
+    public void testGetCustomerAppointments() {
+        // Εκπαίδευση Mock: Φτιάχνουμε μια ψεύτικη λίστα με 1 ραντεβού
+        List<String[]> fakeList = java.util.Collections.singletonList(
+            new String[]{"JohnTheBarber", "Haircut", "2026-05-20", "PENDING"}
+        );
+        when(mockDAO.getCustomerAppointments("Mixalhs")).thenReturn(fakeList);
+
+        // Εκτέλεση
+        List<String[]> result = appointmentService.getCustomerAppointments("Mixalhs");
+
+        // Έλεγχος
+        assertEquals(1, result.size(), "Έπρεπε να γυρίσει 1 ραντεβού.");
+        assertEquals("JohnTheBarber", result.get(0)[0], "Το όνομα του κουρέα δεν ταιριάζει.");
+        
+        // Επιβεβαίωση
+        verify(mockDAO, times(1)).getCustomerAppointments("Mixalhs");
+    }
 }

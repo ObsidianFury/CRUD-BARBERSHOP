@@ -38,36 +38,14 @@ public class barberAppoinmetnsView extends javax.swing.JFrame {
         model.setColumnIdentifiers(new String[]{"ID","Customer Name","Service","Date","Status"});
         model.setRowCount(0);
         
-        // SQL Query: Πεζά γράμματα στους πίνακες και αφαίρεση του appointment_time
-        String sql = "SELECT a.appointment_id, c.username AS customer_name, s.service_name, " +
-                     "a.appointment_date, a.status " + 
-                     "FROM appointments a " + 
-                     "JOIN users b ON a.barber_id = b.user_id " + 
-                     "JOIN users c ON a.customer_id = c.user_id " + 
-                     "JOIN services s ON a.service_id = s.service_id " + 
-                     "WHERE b.username = ? " + 
-                     "ORDER BY a.appointment_date ASC"; // Ταξινόμηση μόνο με ημερομηνία
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
-        
-            pstmt.setString(1,username);
-            
-            try(java.sql.ResultSet rs = pstmt.executeQuery()){
-                
-                while(rs.next()){
-                    // Προσθήκη του κάθε ραντεβού ως γραμμή στον πίνακα
-                    model.addRow(new Object[]{
-                        rs.getInt("appointment_id"), // Διορθώθηκε το ορθογραφικό
-                        rs.getString("customer_name"),
-                        rs.getString("service_name"),
-                        rs.getString("appointment_date"), // Διορθώθηκε το ορθογραφικό
-                        rs.getString("status")
-                    });
-                }
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading appointments: " + e.getMessage());
+        String barberName = usernameShow.getText().trim();
+        java.util.List<String[]> appointments = service.getBarberAppointments(barberName);
+
+        for (String[] row : appointments) {
+            model.addRow(row);
         }
     }
 
