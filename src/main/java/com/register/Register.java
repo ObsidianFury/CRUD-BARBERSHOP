@@ -185,7 +185,7 @@ public class Register extends javax.swing.JFrame {
     }//GEN-LAST:event_usernameFieldActionPerformed
 
     private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
-        
+        // 1. Παίρνουμε τα δεδομένα 
         //username
         String username = usernameField.getText();
         //email
@@ -199,57 +199,40 @@ public class Register extends javax.swing.JFrame {
             
         }
         
-        // --- ΑΡΧΗ ΕΛΕΓΧΟΥ (VALIDATION) ---
-        if (!com.utils.ValidationUtils.isValidUsername(username)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Το Username πρέπει να έχει τουλάχιστον 3 χαρακτήρες.");
-            return; // Σταματάει η διαδικασία εδώ, δεν προχωράει στη MySQL
+        // 2. Δημιουργία DAO και Service
+        com.database.UserDAO userDAO = new com.database.UserDAO();
+        com.utils.RegisterService registerService = new com.utils.RegisterService(userDAO);
+        
+        // 3. Εκτέλεση του Use Case
+        String result = registerService.registerCustomer(username, email, password);
+        
+        // 4. Αντίδραση στο αποτέλεσμα
+        switch (result) {
+            case "SUCCESS":
+                javax.swing.JOptionPane.showMessageDialog(this, "Η εγγραφή ολοκληρώθηκε με επιτυχία!");
+                // Εδώ λογικά έχεις τον κώδικα που σε πάει πίσω στο Login
+                com.login.Login loginPage = new com.login.Login();
+                loginPage.setVisible(true);
+                this.dispose();
+                break;
+            case "INVALID_USERNAME":
+                javax.swing.JOptionPane.showMessageDialog(this, "Το Username πρέπει να έχει τουλάχιστον 3 χαρακτήρες.");
+                break;
+            case "INVALID_EMAIL":
+                javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ εισάγετε ένα έγκυρο email.");
+                break;
+            case "WEAK_PASSWORD":
+                javax.swing.JOptionPane.showMessageDialog(this, "Ο κωδικός πρέπει να έχει τουλάχιστον 5 χαρακτήρες.");
+                break;
+            case "EMAIL_TAKEN":
+                javax.swing.JOptionPane.showMessageDialog(this, "Αυτό το email χρησιμοποιείται ήδη. Δοκιμάστε κάποιο άλλο.");
+                break;
+            case "DB_ERROR":
+                javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα βάσης δεδομένων. Παρακαλώ προσπαθήστε αργότερα.");
+                break;
         }
         
-        if (!com.utils.ValidationUtils.isValidEmail(email)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Παρακαλώ εισάγετε ένα έγκυρο email (π.χ. user@domain.com).");
-            return;
-        }
         
-        if (!com.utils.ValidationUtils.isPasswordStrong(password)) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα: Ο κωδικός είναι πολύ αδύναμος. Πρέπει να έχει τουλάχιστον 5 χαρακτήρες.");
-            return;
-        }
-        // --- ΤΕΛΟΣ ΕΛΕΓΧΟΥ ---
-        
-        //sql statement
-        String sql = "INSERT INTO users (username, email, password, role) VALUES (?,?,?,'CUSTOMER')";
-        
-        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-        // Αντιστοίχιση τιμών στα ερωτηματικά (?)
-        pstmt.setString(1, username);
-        pstmt.setString(2, email);
-        pstmt.setString(3, password);
-
-        // Εκτέλεση της ενημέρωσης στη βάση
-        int rowsInserted = pstmt.executeUpdate();
-        
-        if (rowsInserted > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Registered Succesfully");
-            
-            // Κλείσιμο του τρέχοντος παραθύρου Register
-            this.dispose();
-            
-            // Άνοιγμα του Customer Landing Page από το package com.landingpage
-            com.landingpage.customerLandingPage customerPage = new com.landingpage.customerLandingPage();
-            customerPage.setUsername(username);
-            customerPage.setVisible(true);
-        }
-        
-    } catch (java.sql.SQLException e) {
-        // Διαχείριση σφαλμάτων βάσης
-        if (e.getErrorCode() == 1062) { 
-            javax.swing.JOptionPane.showMessageDialog(this, "Username or email already being used.");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Failled to register " + e.getMessage());
-        }
-    }
         
     }//GEN-LAST:event_signUpButtonActionPerformed
 
