@@ -32,19 +32,12 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
     private void loadBarbers(){
     
         barberComboBox.removeAllItems();
-        String sql = "SELECT username FROM Users WHERE role =  'BARBER'";
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
-            java.sql.ResultSet rs = pstmt.executeQuery()){
-        
-        
-            while(rs.next()){
-                barberComboBox.addItem(rs.getString("username"));
-                
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading barbers: " + e.getMessage());
+        java.util.List<String> barbers = service.getBarbers();
+        for (String barber : barbers) {
+            barberComboBox.addItem(barber);
         }
     }
     
@@ -52,22 +45,12 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
     
         serviceComboBox.removeAllItems();
         
-        String sql = "SELECT s.service_name FROM Services s JOIN Users u ON s.barber_id = u.user_id WHERE u.username = ?";
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
-        
-            pstmt.setString(1,barberName);
-            try(java.sql.ResultSet rs = pstmt.executeQuery()){
-            
-                while(rs.next()){
-                
-                    serviceComboBox.addItem(rs.getString("service_name"));
-                }
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading services: " + e.getMessage());
-            
+        java.util.List<String> services = service.getServiceForBarber(barberName);
+        for (String srv : services) {
+            serviceComboBox.addItem(srv);
         }
         
     }
@@ -299,51 +282,36 @@ public class customerCreateAppoinment extends javax.swing.JFrame {
     private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
         String customerName = usernameShow.getText();
         
-        if(barberComboBox.getSelectedItem() == null || serviceComboBox.getSelectedItem() == null){
-            javax.swing.JOptionPane.showMessageDialog(this,"Choose barber and service");
-        }
-        
-        String barberName = barberComboBox.getSelectedItem().toString();
-        String serviceName = serviceComboBox.getSelectedItem().toString();
-        
-        
+        String barberName = barberComboBox.getSelectedItem() != null ? barberComboBox.getSelectedItem().toString() : null;
+        String serviceName = serviceComboBox.getSelectedItem() != null ? serviceComboBox.getSelectedItem().toString() : null;
         String date = dateField.getText().trim();
         
+        // Καλούμε το Service
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
+        String result = service.bookAppointment(customerName, barberName, serviceName, date);
         
-        if(date.isEmpty()){
-            javax.swing.JOptionPane.showMessageDialog(this, "Please enter date.");
+        // Αντίδραση στο αποτέλεσμα
+        switch (result) {
+            case "SUCCESS":
+                javax.swing.JOptionPane.showMessageDialog(this, "Rantevous entered succesfully");
+                dateField.setText("");
+                dateChooser.setDate(null);
+                break;
+            case "MISSING_SELECTION":
+                javax.swing.JOptionPane.showMessageDialog(this, "Choose barber and service");
+                break;
+            case "MISSING_DATE":
+                javax.swing.JOptionPane.showMessageDialog(this, "Please enter date.");
+                break;
+            case "INVALID_DATE":
+                javax.swing.JOptionPane.showMessageDialog(this, "Η ημερομηνία δεν μπορεί να είναι στο παρελθόν!");
+                break;
+            case "DB_ERROR":
+                javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα κατά την αποθήκευση του ραντεβού.");
+                break;
         }
-        
-        //SQL
-        String sql = "INSERT INTO appointments (customer_id, barber_id, service_id, appointment_date, status) " +
-                     "VALUES (" +
-                     "(SELECT user_id FROM users WHERE username = ? AND role = 'CUSTOMER'), " +
-                     "(SELECT user_id FROM users WHERE username = ? AND role = 'BARBER'), " +
-                     "(SELECT service_id FROM services WHERE service_name = ? AND barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER') LIMIT 1), " +
-                     "?, 'PENDING')";
-        
-        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-         
-        pstmt.setString(1, customerName);
-            pstmt.setString(2, barberName);
-            pstmt.setString(3, serviceName);
-            pstmt.setString(4, barberName);
-            pstmt.setString(5, date); // Εδώ μπαίνει η ημερομηνία
-
-        int rowsInserted = pstmt.executeUpdate();
-        if (rowsInserted > 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Rantevous entered succesfully");
-            dateField.setText("");
-            dateChooser.setDate(null);
-        }
-    } catch (java.sql.SQLException ex) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error inserting: " + ex.getMessage());
-    }
-        
-        
-        
         
     }//GEN-LAST:event_confirmButtonActionPerformed
 
