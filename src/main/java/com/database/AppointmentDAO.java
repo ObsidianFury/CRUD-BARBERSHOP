@@ -83,4 +83,64 @@ public class AppointmentDAO {
         }
     }
     
+    // 1. Ραντεβού ενός συγκεκριμένου Πελάτη
+    public List<String[]> getCustomerAppointments(String customerName) {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT u2.username AS barber, s.service_name, a.appointment_date, a.status " +
+                     "FROM appointments a " +
+                     "JOIN users u1 ON a.customer_id = u1.user_id " +
+                     "JOIN users u2 ON a.barber_id = u2.user_id " +
+                     "JOIN services s ON a.service_id = s.service_id " +
+                     "WHERE u1.username = ? ORDER BY a.appointment_date DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customerName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new String[]{ rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+                }
+            }
+        } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
+        return list;
+    }
+    
+    // 2. Ραντεβού ενός συγκεκριμένου Κουρέα
+    public List<String[]> getBarberAppointments(String barberName) {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT u1.username AS customer, s.service_name, a.appointment_date, a.status " +
+                     "FROM appointments a " +
+                     "JOIN users u1 ON a.customer_id = u1.user_id " +
+                     "JOIN users u2 ON a.barber_id = u2.user_id " +
+                     "JOIN services s ON a.service_id = s.service_id " +
+                     "WHERE u2.username = ? ORDER BY a.appointment_date DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, barberName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new String[]{ rs.getString("customer"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+                }
+            }
+        } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
+        return list;
+    }
+    
+    // 3. Όλα τα ραντεβού για τον Admin
+    public List<String[]> getAllAppointments() {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT u1.username AS customer, u2.username AS barber, s.service_name, a.appointment_date, a.status " +
+                     "FROM appointments a " +
+                     "JOIN users u1 ON a.customer_id = u1.user_id " +
+                     "JOIN users u2 ON a.barber_id = u2.user_id " +
+                     "JOIN services s ON a.service_id = s.service_id ORDER BY a.appointment_date DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                list.add(new String[]{ rs.getString("customer"), rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+            }
+        } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
+        return list;
+    }
+    
 }
