@@ -43,5 +43,20 @@ public class AppointmentService {
         return success ? "SUCCESS" : "DB_ERROR";
     }
     
+    // --- ΠΡΟΒΟΛΗ ΡΑΝΤΕΒΟΥ ---
+    public List<String[]> getCustomerAppointments(String customerName) {
+        if (customerName == null || customerName.isEmpty()) return new java.util.ArrayList<>();
+        return appointmentDAO.getCustomerAppointments(customerName);
+    }
+    
+    public List<String[]> getBarberAppointments(String barberName) {
+        if (barberName == null || barberName.isEmpty()) return new java.util.ArrayList<>();
+        return appointmentDAO.getBarberAppointments(barberName);
+    }
+    
+    public List<String[]> getAllAppointments() {
+        return appointmentDAO.getAllAppointments();
+    }
+    
     
 }
