@@ -35,4 +35,18 @@ public class AdminService {
         boolean success = userDAO.createUser(username, email, password, role);
         return success ? "SUCCESS" : "DB_ERROR";
     }
+    
+    // UC 19: Διαγραφή λογαριασμού
+    public String deleteAccount(String email) {
+        // 1. Έλεγχος αν το email που πληκτρολόγησε είναι έγκυρο
+        if (!ValidationUtils.isValidEmail(email)) {
+            return "INVALID_EMAIL";
+        }
+
+        // 2. Εντολή στη βάση να τον διαγράψει
+        boolean success = userDAO.deleteUser(email);
+        
+        // 3. Επιστροφή αποτελέσματος (SUCCESS ή NOT_FOUND αν δεν υπήρχε το email)
+        return success ? "SUCCESS" : "NOT_FOUND";
+    }
 }

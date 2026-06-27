@@ -67,4 +67,31 @@ public class AdminServiceTest {
         verify(mockUserDAO, never()).isEmailTaken(anyString());
     }
     
+    // --- TESTS ΓΙΑ ΤΗ ΔΙΑΓΡΑΦΗ (UC 19) ---
+
+    @Test
+    public void testSuccessfulAccountDeletion_UC19() {
+        // Εκπαίδευση Mock: Όταν ζητηθεί διαγραφή αυτού του email, επέστρεψε TRUE
+        when(mockUserDAO.deleteUser("delete_me@gmail.com")).thenReturn(true);
+
+        // Εκτέλεση
+        String result = adminService.deleteAccount("delete_me@gmail.com");
+
+        // Έλεγχος
+        assertEquals("SUCCESS", result, "Η διαγραφή έπρεπε να πετύχει.");
+        verify(mockUserDAO, times(1)).deleteUser("delete_me@gmail.com");
+    }
+
+    @Test
+    public void testDeleteAccountInvalidEmail_UC19() {
+        // Εκτέλεση με λάθος email
+        String result = adminService.deleteAccount("lathos-email");
+
+        // Έλεγχος
+        assertEquals("INVALID_EMAIL", result, "Το λάθος email έπρεπε να κοπεί.");
+        
+        // ΕΠΙΒΕΒΑΙΩΣΗ: Αφού το email ήταν λάθος, η βάση ΔΕΝ πρέπει να ενοχληθεί ποτέ!
+        verify(mockUserDAO, never()).deleteUser(anyString());
+    }
+    
 }

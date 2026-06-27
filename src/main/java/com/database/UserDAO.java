@@ -69,4 +69,22 @@ public class UserDAO {
         }
     }
     
+    // Διαγραφή χρήστη βάσει του email του (UC 19)
+    public boolean deleteUser(String email) {
+        String sql = "DELETE FROM users WHERE email = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, email);
+            
+            // Το executeUpdate επιστρέφει τον αριθμό των γραμμών που διαγράφηκαν
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0; // Αν διέγραψε έστω 1, πέτυχε!
+            
+        } catch (SQLException e) {
+            System.out.println("Σφάλμα διαγραφής χρήστη: " + e.getMessage());
+            return false;
+        }
+    }
+    
 }

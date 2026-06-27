@@ -233,6 +233,7 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         emailField.addActionListener(this::emailFieldActionPerformed);
 
         deleteButton.setText("Delete");
+        deleteButton.addActionListener(this::deleteButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -326,6 +327,46 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         landingPage.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_backButoonActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        // TODO add your handling code here:
+        // 1. Παίρνουμε το email από το TextField
+        String email = emailField.getText().trim(); 
+        
+        // (Έξτρα Ασφάλεια): Αν κάποιος πατήσει "Delete" χωρίς να έχει επιλέξει τίποτα από τον πίνακα
+        if (email.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ επιλέξτε έναν χρήστη από τον πίνακα για διαγραφή.");
+            return;
+        }
+
+        // 2. Δημιουργία DAO και Service
+        com.database.UserDAO userDAO = new com.database.UserDAO();
+        com.utils.AdminService adminService = new com.utils.AdminService(userDAO);
+
+        // 3. Εκτέλεση της Υπηρεσίας
+        String result = adminService.deleteAccount(email);
+
+        // 4. Εμφάνιση αντίστοιχου μηνύματος (View)
+        switch (result) {
+            case "SUCCESS":
+                javax.swing.JOptionPane.showMessageDialog(this, "Ο χρήστης διαγράφηκε επιτυχώς!");
+                
+                // --- ΟΙ ΑΛΛΑΓΕΣ ΛΟΓΩ ΤΟΥ LISTENER ΣΟΥ ---
+                emailField.setText("");      // Καθαρίζουμε το email
+                usernameField.setText("");   // Καθαρίζουμε το username
+                selectedUserId = -1;         // Μηδενίζουμε την επιλογή
+                loadUsers();                 // ΑΝΑΝΕΩΝΟΥΜΕ ΤΟΝ ΠΙΝΑΚΑ! Ο διαγραμμένος χρήστης εξαφανίζεται!
+                // ----------------------------------------
+                break;
+                
+            case "INVALID_EMAIL":
+                javax.swing.JOptionPane.showMessageDialog(this, "Παρακαλώ εισάγετε ένα έγκυρο email προς διαγραφή.");
+                break;
+            case "NOT_FOUND":
+                javax.swing.JOptionPane.showMessageDialog(this, "Δεν βρέθηκε χρήστης με αυτό το email στη βάση δεδομένων.");
+                break;
+        }
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
      * @param args the command line arguments
