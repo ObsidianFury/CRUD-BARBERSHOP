@@ -37,31 +37,13 @@ public class barberAvailability extends javax.swing.JFrame {
         // Καθαρίζει τον πίνακα πριν φορτώσει τα νέα δεδομένα
         model.setRowCount(0);
         
-        // SQL: Παίρνει τις διαθεσιμότητες μόνο για τον συγκεκριμένο κουρέα
-        String sql = "SELECT a.availability_id, a.availability_date, a.start_time, a.end_time FROM Availability a " +
-                    "JOIN Users u ON a.barber_id = u.user_id WHERE u.username = ?";
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
-        
-            pstmt.setString(1,username);
-            
-            try(java.sql.ResultSet rs = pstmt.executeQuery()){
-                
-                while(rs.next()){
-                
-                    // Προσθήκη της κάθε διαθεσιμότητας ως γραμμή στον πίνακα
-                    model.addRow(new Object[]{
-                        rs.getInt("availability_id"),
-                        rs.getString("availability_date"),
-                        rs.getString("start_time"),
-                        rs.getString("end_time")
-                    });
-                    }
-                }
-            }catch(java.sql.SQLException e){
-                javax.swing.JOptionPane.showMessageDialog(this, "Error loading availability " + e.getMessage());
-            }
+        java.util.List<String[]> availabilities = service.getBarberAvailability(username);
+        for (String[] row : availabilities) {
+            model.addRow(row);
+        }
             
     }
     
@@ -234,22 +216,27 @@ public class barberAvailability extends javax.swing.JFrame {
         }
         
         String username = usernameShow.getText();
+        boolean isChecked = availabilityCheckBox.isSelected();
         
-        // SQL: Βρίσκει το barber_id και βάζει διαθεσιμότητα για ΣΗΜΕΡΑ 09:00-17:00
-        String sql = "INSERT INTO Availability (barber_id, availability_date, start_time, end_time) " 
-                + "VALUES ((SELECT user_id FROM Users WHERE username = ?), CURDATE(), '09:00:00', '17:00:00')";
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
         
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)){
-            
-            pstmt.setString(1,username);
-            
-            int rowsInserted = pstmt.executeUpdate();
-            if(rowsInserted > 0){
-                javax.swing.JOptionPane.showMessageDialog(this,"Availability added succesfully");
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error saving availability " + e.getMessage());
+        // Καλούμε το Service και του περνάμε την κατάσταση του CheckBox
+        String result = service.addAvailability(username, isChecked);
+        
+        switch (result) {
+            case "SUCCESS":
+                javax.swing.JOptionPane.showMessageDialog(this, "Availability added succesfully");
+                loadAvailability(); // Κάνει refresh τον πίνακα κατευθείαν!
+                availabilityCheckBox.setSelected(false); // Ξε-τικάρει το κουτάκι
+                break;
+            case "NOT_CHECKED":
+                javax.swing.JOptionPane.showMessageDialog(this, "Please check the availability box");
+                break;
+            case "DB_ERROR":
+            case "ERROR":
+                javax.swing.JOptionPane.showMessageDialog(this, "Error saving availability.");
+                break;
         }
         
         

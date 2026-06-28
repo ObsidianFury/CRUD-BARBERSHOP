@@ -108,4 +108,30 @@ public class AppointmentServiceTest {
         // Επιβεβαίωση
         verify(mockDAO, times(1)).getCustomerAppointments("Mixalhs");
     }
+    
+    // --- TESTS ΓΙΑ ΤΗ ΔΙΑΘΕΣΙΜΟΤΗΤΑ ---
+
+    @Test
+    public void testAddAvailabilitySuccess() {
+        // Εκπαίδευση: Όταν σταλεί σωστό όνομα, η βάση λέει TRUE
+        when(mockDAO.addAvailability("John")).thenReturn(true);
+
+        // Εκτέλεση (Το checkbox είναι τσεκαρισμένο = true)
+        String result = appointmentService.addAvailability("John", true);
+
+        // Έλεγχος
+        assertEquals("SUCCESS", result);
+        verify(mockDAO, times(1)).addAvailability("John");
+    }
+
+    @Test
+    public void testAddAvailabilityNotChecked() {
+        // Εκτέλεση (Το checkbox ΔΕΝ είναι τσεκαρισμένο = false)
+        String result = appointmentService.addAvailability("John", false);
+
+        // Έλεγχος
+        assertEquals("NOT_CHECKED", result, "Έπρεπε να κοπεί γιατί δεν τσέκαρε το κουτάκι.");
+        // Επιβεβαίωση: Δεν καλέσαμε ποτέ τη βάση
+        verify(mockDAO, never()).addAvailability(anyString());
+    }
 }

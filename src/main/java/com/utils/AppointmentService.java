@@ -59,4 +59,27 @@ public class AppointmentService {
     }
     
     
+    // --- ΛΟΓΙΚΗ ΓΙΑ ΔΙΑΘΕΣΙΜΟΤΗΤΑ ---
+    
+    public List<String[]> getBarberAvailability(String barberName) {
+        if (barberName == null || barberName.trim().isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
+        return appointmentDAO.getBarberAvailability(barberName);
+    }
+    
+    public String addAvailability(String barberName, boolean isChecked) {
+        // Ελέγχουμε αν το κουτάκι είναι τσεκαρισμένο
+        if (!isChecked) {
+            return "NOT_CHECKED";
+        }
+        if (barberName == null || barberName.trim().isEmpty()) {
+            return "ERROR";
+        }
+
+        boolean success = appointmentDAO.addAvailability(barberName);
+        return success ? "SUCCESS" : "DB_ERROR";
+    }
+    
+    
 }

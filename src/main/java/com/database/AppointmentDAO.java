@@ -143,4 +143,48 @@ public class AppointmentDAO {
         return list;
     }
     
+    // --- ΔΙΑΘΕΣΙΜΟΤΗΤΑ ΚΟΥΡΕΑ ---
+
+    // Φέρνει τις διαθεσιμότητες για τον πίνακα
+    public List<String[]> getBarberAvailability(String barberName) {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT a.availability_id, a.availability_date, a.start_time, a.end_time " +
+                     "FROM Availability a JOIN Users u ON a.barber_id = u.user_id WHERE u.username = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, barberName);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new String[]{
+                        String.valueOf(rs.getInt("availability_id")),
+                        rs.getString("availability_date"),
+                        rs.getString("start_time"),
+                        rs.getString("end_time")
+                    });
+                }
+            }
+        } catch (SQLException e) { System.out.println("Σφάλμα φόρτωσης διαθεσιμότητας: " + e.getMessage()); }
+        return list;
+    }
+    
+    // Προσθέτει διαθεσιμότητα
+    public boolean addAvailability(String barberName) {
+        String sql = "INSERT INTO Availability (barber_id, availability_date, start_time, end_time) " +
+                     "VALUES ((SELECT user_id FROM Users WHERE username = ?), CURDATE(), '09:00:00', '17:00:00')";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, barberName);
+            return pstmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Σφάλμα προσθήκης διαθεσιμότητας: " + e.getMessage());
+            return false;
+        }
+        
+    }
+    
 }
