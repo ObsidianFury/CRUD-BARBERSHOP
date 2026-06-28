@@ -187,4 +187,44 @@ public class AppointmentDAO {
         
     }
     
+    // --- ΓΙΑ ΤΟΝ ADMIN (Τροποποίηση Ραντεβού) ---
+
+    // Φέρνει όλες τις διαθέσιμες υπηρεσίες (για το ComboBox του Admin)
+    public List<String> getAllServices() {
+        List<String> services = new ArrayList<>();
+        String sql = "SELECT DISTINCT service_name FROM services";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                services.add(rs.getString("service_name"));
+            }
+        } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
+        return services;
+    }
+
+    // Ενημερώνει ένα υπάρχον ραντεβού (για το Modify του Admin)
+    public boolean updateAppointment(int appointmentId, String date, String barberName, String serviceName) {
+        String sql = "UPDATE appointments SET " +
+                     "appointment_date = ?, " +
+                     "barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER'), " +
+                     "service_id = (SELECT service_id FROM services WHERE service_name = ? AND barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER') LIMIT 1) " +
+                     "WHERE appointment_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             
+            pstmt.setString(1, date);
+            pstmt.setString(2, barberName);
+            pstmt.setString(3, serviceName);
+            pstmt.setString(4, barberName);
+            pstmt.setInt(5, appointmentId);
+            
+            return pstmt.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            System.out.println("Σφάλμα ενημέρωσης ραντεβού: " + e.getMessage());
+            return false;
+        }
+    }
+    
 }

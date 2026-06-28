@@ -87,4 +87,27 @@ public class UserDAO {
         }
     }
     
+    // Φέρνει όλους τους πελάτες και τους κουρείς για τον πίνακα του Admin
+    public java.util.List<String[]> getAllUsers() {
+        java.util.List<String[]> users = new java.util.ArrayList<>();
+        String sql = "SELECT user_id, username, email, role FROM users WHERE role IN ('CUSTOMER', 'BARBER') ORDER BY role DESC, username ASC";
+        
+        try (java.sql.Connection conn = DBConnection.getConnection();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+             java.sql.ResultSet rs = pstmt.executeQuery()) {
+             
+            while (rs.next()) {
+                users.add(new String[]{
+                    String.valueOf(rs.getInt("user_id")),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("role")
+                });
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("Σφάλμα φόρτωσης χρηστών: " + e.getMessage());
+        }
+        return users;
+    }
+    
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.utils.RegisterServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-27T19:09:01.497Z" hostname="MIKE" time="1.167">
+  <properties/>
+  <testcase name="testEmailAlreadyTaken()" classname="com.utils.RegisterServiceTest" time="1.133"/>
+  <testcase name="testWeakPasswordFailsEarly()" classname="com.utils.RegisterServiceTest" time="0.004"/>
+  <testcase name="testSuccessfulRegistration()" classname="com.utils.RegisterServiceTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+]]></system-err>
+</testsuite>

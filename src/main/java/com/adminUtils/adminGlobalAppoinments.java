@@ -58,28 +58,19 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
        barberComboBox.removeAllItems();
         serviceComboBox.removeAllItems();
         
-        // Φόρτωση Κουρέων (πεζά γράμματα στο users)
-        String barberSql = "SELECT username FROM users WHERE role = 'BARBER'";
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(barberSql);
-            java.sql.ResultSet rs = pstmt.executeQuery()){
-            while(rs.next()){
-                barberComboBox.addItem(rs.getString("username"));
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading barber combobox: " + e.getMessage());
+        com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+        com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
+
+        // Φόρτωση Κουρέων (Η μέθοδος υπήρχε ήδη!)
+        java.util.List<String> barbers = service.getBarbers();
+        for (String b : barbers) {
+            barberComboBox.addItem(b);
         }
-        
-        // Φόρτωση Υπηρεσιών (πεζά γράμματα στο services)
-        String serviceSql = "SELECT DISTINCT service_name FROM services";
-        try(java.sql.Connection conn = com.database.DBConnection.getConnection();
-            java.sql.PreparedStatement pstmt = conn.prepareStatement(serviceSql);
-            java.sql.ResultSet rs = pstmt.executeQuery()){
-            while(rs.next()){
-                serviceComboBox.addItem(rs.getString("service_name"));
-            }
-        }catch(java.sql.SQLException e){
-            javax.swing.JOptionPane.showMessageDialog(this,"Error loading service combobox: " + e.getMessage());
+
+        // Φόρτωση Υπηρεσιών
+        java.util.List<String> services = service.getAllServices();
+        for (String s : services) {
+            serviceComboBox.addItem(s);
         }
     
     }
@@ -150,31 +141,25 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
                 return;
             }
             
-            // SQL Query: Αφαίρεση του appointment_time και πεζά γράμματα
-            String sql = "UPDATE appointments SET " +
-                         "appointment_date = ?, " +
-                         "barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER'), " +
-                         "service_id = (SELECT service_id FROM services WHERE service_name = ? AND barber_id = (SELECT user_id FROM users WHERE username = ? AND role = 'BARBER') LIMIT 1) " +
-                         "WHERE appointment_id = ?";
-                         
-            try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-                 java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                 
-                pstmt.setString(1, datePart);
-                pstmt.setString(2, barberName);
-                pstmt.setString(3, serviceName);
-                pstmt.setString(4, barberName);
-                pstmt.setInt(5, selectedAppointmentId);
-                
-                int rowsUpdated = pstmt.executeUpdate();
-                if (rowsUpdated > 0) {
+            com.database.AppointmentDAO dao = new com.database.AppointmentDAO();
+            com.utils.AppointmentService service = new com.utils.AppointmentService(dao);
+            
+            String result = service.updateAppointment(selectedAppointmentId, datePart, barberName, serviceName);
+            
+            switch (result) {
+                case "SUCCESS":
                     javax.swing.JOptionPane.showMessageDialog(this, "Το ραντεβού τροποποιήθηκε επιτυχώς!");
                     loadAllAppointments(); // Ανανέωση του πίνακα ζωντανά
-                } else {
+                    break;
+                case "EMPTY_FIELDS":
+                    javax.swing.JOptionPane.showMessageDialog(this, "Τα πεδία δεν πρέπει να είναι κενά.");
+                    break;
+                case "INVALID_DATE":
+                    javax.swing.JOptionPane.showMessageDialog(this, "Η ημερομηνία δεν μπορεί να είναι στο παρελθόν.");
+                    break;
+                case "DB_ERROR":
                     javax.swing.JOptionPane.showMessageDialog(this, "Δεν βρέθηκε έγκυρος συνδυασμός Barber και Service στη βάση.");
-                }
-            } catch (java.sql.SQLException ex) {
-                javax.swing.JOptionPane.showMessageDialog(this, "Σφάλμα κατά την τροποποίηση: " + ex.getMessage());
+                    break;
             }
         });
     }
@@ -321,6 +306,7 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         serviceField.addActionListener(this::serviceFieldActionPerformed);
 
         modifyButton.setText("Modify");
+        modifyButton.addActionListener(this::modifyButtonActionPerformed);
 
         barberComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -453,6 +439,10 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         landingPage.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_backButtonActionPerformed
+
+    private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_modifyButtonActionPerformed
 
     /**
      * @param args the command line arguments

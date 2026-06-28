@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.database.DBConnectionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-05-22T07:36:09.811Z" hostname="MIKE" time="0.491">
-  <properties/>
-  <testcase name="testConnectionNotNull()" classname="com.database.DBConnectionTest" time="0.473"/>
-  <system-out><![CDATA[DB connection succesful
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

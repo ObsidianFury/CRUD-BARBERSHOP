@@ -81,5 +81,26 @@ public class AppointmentService {
         return success ? "SUCCESS" : "DB_ERROR";
     }
     
+    // --- ΛΟΓΙΚΗ ΓΙΑ ADMIN (Τροποποίηση Ραντεβού) ---
+    
+    public java.util.List<String> getAllServices() {
+        return appointmentDAO.getAllServices();
+    }
+
+    public String updateAppointment(int appointmentId, String date, String barberName, String serviceName) {
+        if (appointmentId <= 0) return "INVALID_ID";
+        if (barberName == null || barberName.trim().isEmpty() || 
+            serviceName == null || serviceName.trim().isEmpty() || 
+            date == null || date.trim().isEmpty()) {
+            return "EMPTY_FIELDS";
+        }
+        
+        // (Προαιρετικό αλλά καλό) Εμποδίζει τον Admin να βάλει ημερομηνία στο παρελθόν
+        if (!ValidationUtils.isFutureOrToday(date)) return "INVALID_DATE";
+
+        boolean success = appointmentDAO.updateAppointment(appointmentId, date, barberName, serviceName);
+        return success ? "SUCCESS" : "DB_ERROR";
+    }
+    
     
 }

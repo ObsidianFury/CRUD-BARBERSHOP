@@ -33,22 +33,20 @@ public class adminAccountsDeletions extends javax.swing.JFrame {
         model.setColumnIdentifiers(new String[]{"User ID", "Username", "Email", "Role"});
         model.setRowCount(0);
 
-        String sql = "SELECT user_id, username, email, role FROM Users WHERE role IN ('CUSTOMER', 'BARBER') ORDER BY role DESC, username ASC";
+        com.database.UserDAO dao = new com.database.UserDAO();
+        com.utils.AdminService service = new com.utils.AdminService(dao);
 
-        try (java.sql.Connection conn = com.database.DBConnection.getConnection();
-             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
-             java.sql.ResultSet rs = pstmt.executeQuery()) {
-             
-            while (rs.next()) {
-                model.addRow(new Object[]{
-                    rs.getInt("user_id"),
-                    rs.getString("username"),
-                    rs.getString("email"),
-                    rs.getString("role")
-                });
-            }
-        } catch (java.sql.SQLException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error loading users: " + e.getMessage());
+        // Φέρνουμε τους χρήστες μέσω του MVC
+        java.util.List<String[]> users = service.getAllUsers();
+
+        for (String[] row : users) {
+            // Προσθέτουμε τη γραμμή (Μετατρέπουμε το ID σε Integer γιατί ο Listener το ζητάει έτσι)
+            model.addRow(new Object[]{
+                Integer.parseInt(row[0]), 
+                row[1], 
+                row[2], 
+                row[3]
+            });
         }
     }
     

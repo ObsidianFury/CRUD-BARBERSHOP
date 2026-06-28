@@ -49,4 +49,9 @@ public class AdminService {
         // 3. Επιστροφή αποτελέσματος (SUCCESS ή NOT_FOUND αν δεν υπήρχε το email)
         return success ? "SUCCESS" : "NOT_FOUND";
     }
+    
+    // Επιστρέφει τη λίστα με τους χρήστες για τον πίνακα διαγραφής
+    public java.util.List<String[]> getAllUsers() {
+        return userDAO.getAllUsers();
+    }
 }
