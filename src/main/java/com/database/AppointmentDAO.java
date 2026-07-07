@@ -86,7 +86,7 @@ public class AppointmentDAO {
     // 1. Ραντεβού ενός συγκεκριμένου Πελάτη
     public List<String[]> getCustomerAppointments(String customerName) {
         List<String[]> list = new ArrayList<>();
-        String sql = "SELECT u2.username AS barber, s.service_name, a.appointment_date, a.status " +
+        String sql = "SELECT a.appointment_id, u2.username AS barber, s.service_name, a.appointment_date, a.status " +
                      "FROM appointments a " +
                      "JOIN users u1 ON a.customer_id = u1.user_id " +
                      "JOIN users u2 ON a.barber_id = u2.user_id " +
@@ -97,7 +97,7 @@ public class AppointmentDAO {
             pstmt.setString(1, customerName);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new String[]{ rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+                    list.add(new String[]{ String.valueOf(rs.getInt("appointment_id")), rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
                 }
             }
         } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
@@ -107,7 +107,7 @@ public class AppointmentDAO {
     // 2. Ραντεβού ενός συγκεκριμένου Κουρέα
     public List<String[]> getBarberAppointments(String barberName) {
         List<String[]> list = new ArrayList<>();
-        String sql = "SELECT u1.username AS customer, s.service_name, a.appointment_date, a.status " +
+        String sql = "SELECT a.appointment_id, u1.username AS customer, s.service_name, a.appointment_date, a.status " +
                      "FROM appointments a " +
                      "JOIN users u1 ON a.customer_id = u1.user_id " +
                      "JOIN users u2 ON a.barber_id = u2.user_id " +
@@ -118,7 +118,7 @@ public class AppointmentDAO {
             pstmt.setString(1, barberName);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new String[]{ rs.getString("customer"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+                    list.add(new String[]{String.valueOf(rs.getInt("appointment_id")), rs.getString("customer"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
                 }
             }
         } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
@@ -128,7 +128,7 @@ public class AppointmentDAO {
     // 3. Όλα τα ραντεβού για τον Admin
     public List<String[]> getAllAppointments() {
         List<String[]> list = new ArrayList<>();
-        String sql = "SELECT u1.username AS customer, u2.username AS barber, s.service_name, a.appointment_date, a.status " +
+        String sql = "SELECT a.appointment_id, u1.username AS customer, u2.username AS barber, s.service_name, a.appointment_date, a.status " +
                      "FROM appointments a " +
                      "JOIN users u1 ON a.customer_id = u1.user_id " +
                      "JOIN users u2 ON a.barber_id = u2.user_id " +
@@ -137,7 +137,7 @@ public class AppointmentDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                list.add(new String[]{ rs.getString("customer"), rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
+                list.add(new String[]{ String.valueOf(rs.getInt("appointment_id")),rs.getString("customer"), rs.getString("barber"), rs.getString("service_name"), rs.getString("appointment_date"), rs.getString("status") });
             }
         } catch (SQLException e) { System.out.println("Σφάλμα: " + e.getMessage()); }
         return list;
