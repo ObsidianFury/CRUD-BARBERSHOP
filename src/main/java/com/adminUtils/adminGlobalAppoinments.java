@@ -100,6 +100,7 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
         });
         
         // Κουμπί SELECT: Παίρνει τα στοιχεία της επιλεγμένης γραμμής και τα βάζει στα Fields
+        // Κουμπί SELECT: Παίρνει τα στοιχεία της επιλεγμένης γραμμής και τα βάζει στα Fields
         selectButton.addActionListener(e -> {
             int selectedRow = jTable1.getSelectedRow();
             if (selectedRow == -1) {
@@ -107,7 +108,10 @@ public class adminGlobalAppoinments extends javax.swing.JFrame {
                 return;
             }
             
-            selectedAppointmentId = (int) jTable1.getValueAt(selectedRow, 0);
+            // --- Η ΔΙΟΡΘΩΣΗ ΕΙΝΑΙ ΕΔΩ! Διαβάζουμε το String και το κάνουμε Integer ---
+            selectedAppointmentId = Integer.parseInt(jTable1.getValueAt(selectedRow, 0).toString());
+            // -------------------------------------------------------------------------
+            
             usernameField.setText(jTable1.getValueAt(selectedRow, 1).toString());
             barberField.setText(jTable1.getValueAt(selectedRow, 2).toString());
             serviceField.setText(jTable1.getValueAt(selectedRow, 3).toString());
