@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.utils.AuthServiceTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-07T06:09:28.006Z" hostname="MIKE" time="0.015">
+  <properties/>
+  <testcase name="testFailedLoginEmptyFields_UC01()" classname="com.utils.AuthServiceTest" time="0.004"/>
+  <testcase name="testFailedLoginWrongPassword_UC01()" classname="com.utils.AuthServiceTest" time="0.006"/>
+  <testcase name="testSuccessfulLogin_UC01()" classname="com.utils.AuthServiceTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

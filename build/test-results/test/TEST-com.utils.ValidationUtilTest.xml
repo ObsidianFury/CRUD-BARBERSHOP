@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.utils.ValidationUtilTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-07-07T06:09:28.036Z" hostname="MIKE" time="0.025">
+  <properties/>
+  <testcase name="testNullOrEmptyEmail()" classname="com.utils.ValidationUtilTest" time="0.002"/>
+  <testcase name="testInvalidRole()" classname="com.utils.ValidationUtilTest" time="0.002"/>
+  <testcase name="testInvalidEmailWithoutAtSymbol()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testValidEmail()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testValidRoles()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testPastDateIsInvalid()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testInvalidDateFormat()" classname="com.utils.ValidationUtilTest" time="0.002"/>
+  <testcase name="testStrongPassword()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testValidUsername()" classname="com.utils.ValidationUtilTest" time="0.0"/>
+  <testcase name="testInvalidUsernameTooShort()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testWeakPassword()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <testcase name="testValidDateFormat()" classname="com.utils.ValidationUtilTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
